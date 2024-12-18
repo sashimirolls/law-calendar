@@ -25,7 +25,8 @@ async function getAvailableDates(calendarId: string, month: string): Promise<str
       }
     });
 
-    if (!response.data || response.data.error) {
+    if (!Array.isArray(response.data)) {
+      Logger.error('AcuityAPI', 'Invalid response format:', response.data);
       throw new Error(response.data?.error || 'Invalid API response');
     }
 
@@ -58,7 +59,8 @@ async function getAvailableTimes(calendarId: string, date: string): Promise<Time
       }
     });
 
-    if (!response.data || response.data.error) {
+    if (!Array.isArray(response.data)) {
+      Logger.error('AcuityAPI', 'Invalid response format:', response.data);
       throw new Error(response.data?.error || 'Invalid API response');
     }
 
@@ -80,8 +82,8 @@ export async function getAvailability(calendarId: string, date: string): Promise
     
     Logger.debug('AcuityAPI', 'Available dates:', availableDates);
 
-    // Check if the requested date is available
-    if (!availableDates.includes(date)) {
+    // Ensure availableDates is an array before using includes
+    if (!Array.isArray(availableDates) || !availableDates.includes(date)) {
       Logger.warn('AcuityAPI', 'Requested date not available:', date);
       return [];
     }
@@ -89,7 +91,13 @@ export async function getAvailability(calendarId: string, date: string): Promise
     // Then get times for the specific date
     const times = await getAvailableTimes(calendarId, date);
     
-    Logger.debug('AcuityAPI', 'Available times:', times);
+    // Ensure times is an array
+    if (!Array.isArray(times)) {
+      Logger.error('AcuityAPI', 'Invalid times format:', times);
+      return [];
+    }
+
+    Logger.debug('AcuityAPI', 'Available times:', { count: times.length, times });
     return times;
   } catch (error) {
     Logger.error('AcuityAPI', 'Error in availability flow:', error);
