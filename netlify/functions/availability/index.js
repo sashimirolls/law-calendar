@@ -17,12 +17,14 @@ exports.handler = async (event, context) => {
   console.log('[DEBUG] Environment variables:', {
     ACUITY_API_KEY: process.env.ACUITY_API_KEY ? 'Present' : 'Missing',
     ACUITY_USER_ID: process.env.ACUITY_USER_ID ? 'Present' : 'Missing',
-    APPOINTMENT_TYPE: process.env.APPOINTMENT_TYPE ? 'Present' : 'Missing'
+    APPOINTMENT_TYPE: process.env.APPOINTMENT_TYPE ? 'Present' : 'Missing',
+    NODE_ENV: process.env.NODE_ENV
   });
 
   console.log('[DEBUG] Request details:', {
     method: event.httpMethod,
-    params: event.queryStringParameters
+    params: event.queryStringParameters,
+    url: event.path
   });
 
   const { date, calendarId } = event.queryStringParameters || {};
