@@ -13,8 +13,19 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1",
+      "src": "/api/dates",
+      "dest": "api/availability/dates.js",
+      "methods": ["GET", "POST", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Max-Age": "86400"
+      }
+    },
+    {
+      "src": "/api/times",
+      "dest": "api/availability/times.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
@@ -25,7 +36,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/$1",
+      "dest": "/index.html",
       "continue": true
     }
   ]
