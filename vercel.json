@@ -14,8 +14,14 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1.js",
-      "methods": ["GET", "OPTIONS"]
+      "dest": "/api/$1",
+      "methods": ["GET", "POST", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Max-Age": "86400"
+      }
     },
     {
       "src": "/(.*)",
