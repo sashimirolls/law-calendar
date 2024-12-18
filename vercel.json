@@ -14,7 +14,7 @@
   "routes": [
     {
       "src": "/api/dates",
-      "dest": "api/availability/dates.js",
+      "dest": "/api/availability/dates.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
@@ -25,7 +25,7 @@
     },
     {
       "src": "/api/times",
-      "dest": "api/availability/times.js",
+      "dest": "/api/availability/times.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
@@ -37,7 +37,7 @@
     {
       "src": "/(.*)",
       "dest": "/index.html",
-      "continue": true
+      "status": 200
     }
   ]
 }
