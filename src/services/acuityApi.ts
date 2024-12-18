@@ -2,14 +2,17 @@ import axios from 'axios';
 import { TimeSlot } from '../types/acuity';
 import { Logger } from '../utils/logger';
 import { API_CONFIG } from './config';
+import { formatDate } from '../utils/date';
 
 export async function getAvailability(calendarId: string, date: string): Promise<TimeSlot[]> {
   try {
     Logger.debug('AcuityAPI', 'Fetching availability', { calendarId, date });
+    const formattedDate = formatDate(date);
 
-    const response = await axios.get(`${API_CONFIG.BASE_URL}/availability`, {
+    // First get available dates
+    const datesResponse = await axios.get(`${API_CONFIG.BASE_URL}/dates`, {
       params: {
-        date,
+        month: formattedDate.slice(0, 7), // YYYY-MM format
         calendarId,
         appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
       },
@@ -19,12 +22,32 @@ export async function getAvailability(calendarId: string, date: string): Promise
       }
     });
 
-    if (!Array.isArray(response.data)) {
-      Logger.error('AcuityAPI', 'Invalid response format:', response.data);
+    // Check if the requested date is available
+    const availableDates = datesResponse.data;
+    if (!Array.isArray(availableDates) || !availableDates.some(d => d.date === formattedDate)) {
+      Logger.debug('AcuityAPI', 'No availability for date:', formattedDate);
       return [];
     }
 
-    return response.data.map((slot: any) => ({
+    // Then get available times for the date
+    const timesResponse = await axios.get(`${API_CONFIG.BASE_URL}/times`, {
+      params: {
+        date: formattedDate,
+        calendarId,
+        appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
+      },
+      headers: {
+        'Accept': 'application/json',
+        'Cache-Control': 'no-cache'
+      }
+    });
+
+    if (!Array.isArray(timesResponse.data)) {
+      Logger.error('AcuityAPI', 'Invalid times response format:', timesResponse.data);
+      return [];
+    }
+
+    return timesResponse.data.map((slot: any) => ({
       datetime: slot.time || slot.datetime,
       isAvailable: true
     }));
