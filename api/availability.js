@@ -15,16 +15,17 @@ module.exports = async (req, res) => {
   console.log('[Vercel:Availability] Request received:', {
     method: req.method,
     query: req.query,
-    url: req.url,
+    headers: req.headers,
     env: {
-      hasApiKey: !!process.env.VITE_ACUITY_API_KEY,
-      hasUserId: !!process.env.VITE_ACUITY_USER_ID,
-      hasAppointmentType: !!process.env.VITE_APPOINTMENT_TYPE
+      hasApiKey: !!process.env.ACUITY_API_KEY,
+      hasUserId: !!process.env.ACUITY_USER_ID,
+      hasAppointmentType: !!process.env.APPOINTMENT_TYPE
     }
   });
 
   const { date, calendarId } = req.query;
 
+  // Validate environment variables
   if (!process.env.ACUITY_API_KEY || !process.env.ACUITY_USER_ID || !process.env.APPOINTMENT_TYPE) {
     console.error('[Vercel:Availability] Missing environment variables');
     return res.status(500).json({ 
