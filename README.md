@@ -30,9 +30,9 @@ npm run preview
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-VITE_ACUITY_API_KEY=your_api_key
-VITE_ACUITY_USER_ID=your_user_id
-VITE_APPOINTMENT_TYPE=your_appointment_type
+ACUITY_API_KEY=your_api_key
+ACUITY_USER_ID=your_user_id
+APPOINTMENT_TYPE=your_appointment_type
 ```
 
 ## Deployment
