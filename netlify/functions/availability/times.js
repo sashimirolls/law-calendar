@@ -3,7 +3,7 @@ const axios = require('axios');
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
     'Access-Control-Allow-Methods': 'GET, OPTIONS'
   };
 
@@ -33,7 +33,7 @@ exports.handler = async (event, context) => {
     const response = await axios({
       method: 'GET',
       url: 'https://acuityscheduling.com/api/v1/availability/times',
-      headers: {
+      headers: { 
         'Authorization': `Basic ${auth}`,
         'Accept': 'application/json'
       },
