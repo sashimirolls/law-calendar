@@ -1,7 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.PROD
-    ? 'https://law-calendar.vercel.app/api'
-    : '/api',
+  BASE_URL: '/.netlify/functions',
   ACUITY: {
     BASE_URL: 'https://acuityscheduling.com/api/v1/availability',
     API_KEY: import.meta.env.ACUITY_API_KEY,
