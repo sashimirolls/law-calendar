@@ -1,22 +1,32 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "netlify/functions"
+  functions = "./netlify/functions"
 
 [[redirects]]
   from = "/.netlify/functions/*"
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
+  headers = {Access-Control-Allow-Origin = "*"}
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["axios"]
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "18.0.0"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Max-Age = "86400"
