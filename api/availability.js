@@ -3,8 +3,10 @@ const axios = require('axios');
 module.exports = async (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  res.setHeader('Cache-Control', 'no-cache');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -15,9 +17,9 @@ module.exports = async (req, res) => {
     query: req.query,
     url: req.url,
     env: {
-      hasApiKey: !!process.env.ACUITY_API_KEY,
-      hasUserId: !!process.env.ACUITY_USER_ID,
-      hasAppointmentType: !!process.env.APPOINTMENT_TYPE
+      hasApiKey: !!process.env.VITE_ACUITY_API_KEY,
+      hasUserId: !!process.env.VITE_ACUITY_USER_ID,
+      hasAppointmentType: !!process.env.VITE_APPOINTMENT_TYPE
     }
   });
 
