@@ -1,21 +1,27 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "./netlify/functions"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/.netlify/functions/dates"
   to = "/.netlify/functions/availability/dates"
   status = 200
   force = true
-  headers = {Access-Control-Allow-Origin = "*"}
+  [redirects.headers]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
 
 [[redirects]]
   from = "/.netlify/functions/times"
   to = "/.netlify/functions/availability/times"
   status = 200
   force = true
-  headers = {Access-Control-Allow-Origin = "*"}
+  [redirects.headers]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
 
 [[redirects]]
   from = "/*"
@@ -29,11 +35,3 @@
 
 [build.environment]
   NODE_VERSION = "18.0.0"
-
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
-    Access-Control-Max-Age = "86400"
