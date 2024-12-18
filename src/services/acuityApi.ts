@@ -4,13 +4,12 @@ import { Logger } from '../utils/logger';
 import { API_CONFIG } from './config';
 
 export async function getAvailability(calendarId: string, date: string): Promise<TimeSlot[]> {
-  const apiUrl = `${API_CONFIG.BASE_URL}/availability`;
+  const apiUrl = `${API_CONFIG.BASE_URL}/api/availability`;
 
   Logger.debug('AcuityAPI', 'Fetching availability', { 
     calendarId, 
     date,
-    apiUrl,
-    env: import.meta.env.MODE
+    apiUrl
   });
   
   try {
@@ -18,7 +17,8 @@ export async function getAvailability(calendarId: string, date: string): Promise
       params: { date, calendarId },
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
       }
     });
     
