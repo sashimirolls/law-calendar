@@ -7,17 +7,13 @@ export async function getAvailability(calendarID: string, date: string): Promise
   try {
     Logger.debug('AcuityAPI', 'Fetching availability', { calendarID, date });
     
-    // Test API connection first
-    const testResponse = await acuityClient.get('/test');
-    Logger.debug('AcuityAPI', 'Test response:', testResponse.data);
-
     const formattedDate = formatDate(date);
 
     // First get available dates for the month
-    const datesResponse = await acuityClient.get('/availability/dates', {
+    const datesResponse = await acuityClient.get('/dates', {
       params: {
         month: formattedDate.slice(0, 7), // YYYY-MM format
-        calendarId: calendarID,
+        calendarID,
         appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
@@ -30,10 +26,10 @@ export async function getAvailability(calendarID: string, date: string): Promise
     }
 
     // Get available times for the specific date
-    const timesResponse = await acuityClient.get('/availability/times', {
+    const timesResponse = await acuityClient.get('/times', {
       params: {
         date: formattedDate,
-        calendarId: calendarID,
+        calendarID,
         appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
