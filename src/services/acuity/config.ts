@@ -1,10 +1,13 @@
 import { AcuityConfig } from './types';
 
+export const ACUITY_TIMEOUT = 15000; // 15 seconds
+
 export const acuityConfig: AcuityConfig = {
-  baseUrl: import.meta.env.PROD 
-    ? 'https://law-calendar.vercel.app/api'
-    : '',
-  apiKey: import.meta.env.ACUITY_API_KEY || '',
-  userId: import.meta.env.ACUITY_USER_ID || '',
-  appointmentType: import.meta.env.APPOINTMENT_TYPE || ''
+  baseUrl: 'https://acuityscheduling.com/api/v1',
+  timeout: ACUITY_TIMEOUT,
+  retries: 2,
+  headers: {
+    'Accept': 'application/json',
+    'Cache-Control': 'no-cache'
+  }
 };
