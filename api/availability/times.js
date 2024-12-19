@@ -23,10 +23,10 @@ export default async function handler(req, res) {
     requestMethod: req.method
   });
 
-  const { date, calendarId } = req.query;
+  const { date, calendarID } = req.query;
 
-  if (!date || !calendarId) {
-    console.error('[Vercel:Times] Missing parameters:', { date, calendarId });
+  if (!date || !calendarID) {
+    console.error('[Vercel:Times] Missing parameters:', { date, calendarID });
     return res.status(400).json({ error: 'Missing required parameters' });
   }
 
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     
     console.log('[Vercel:Times] Request details:', {
       url: 'https://acuityscheduling.com/api/v1/availability/times',
-      calendarId,
+      calendarID,
       date,
       appointmentTypeID: process.env.APPOINTMENT_TYPE,
       auth: auth.slice(-10) // Show last 10 chars of auth for debugging
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       },
       params: {
         date,
-        calendarID: calendarId,
+        calendarID,
         appointmentTypeID: process.env.APPOINTMENT_TYPE
       }
     });
