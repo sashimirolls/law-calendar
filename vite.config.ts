@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  envPrefix: ['ACUITY_', 'API_'],
+  envPrefix: ['VITE_', 'ACUITY_', 'API_'],
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
