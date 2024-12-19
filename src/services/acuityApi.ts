@@ -8,11 +8,12 @@ export async function getAvailability(calendarID: string, date: string): Promise
     Logger.debug('AcuityAPI', 'Fetching availability', { calendarID, date });
     
     const formattedDate = formatDate(date);
+    const month = formattedDate.slice(0, 7); // YYYY-MM format
 
-    // First get available dates for the month
-    const datesResponse = await acuityClient.get('/dates', {
+    // Get available dates from Vercel API
+    const datesResponse = await acuityClient.get('/availability/dates', {
       params: {
-        month: formattedDate.slice(0, 7), // YYYY-MM format
+        month,
         calendarID,
         appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
@@ -20,13 +21,13 @@ export async function getAvailability(calendarID: string, date: string): Promise
 
     // Check if the requested date is in available dates
     const availableDates = datesResponse.data;
-    if (!Array.isArray(availableDates) || !availableDates.some(d => d.date === formattedDate)) {
+    if (!Array.isArray(availableDates)) {
       Logger.debug('AcuityAPI', 'No availability for date:', formattedDate);
       return [];
     }
 
-    // Get available times for the specific date
-    const timesResponse = await acuityClient.get('/times', {
+    // Get available times from Vercel API
+    const timesResponse = await acuityClient.get('/availability/times', {
       params: {
         date: formattedDate,
         calendarID,
