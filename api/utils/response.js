@@ -1,5 +1,4 @@
-// Common CORS headers
-export const corsHeaders = {
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
@@ -7,8 +6,7 @@ export const corsHeaders = {
   'Cache-Control': 'no-cache'
 };
 
-// Helper to send JSON response with CORS headers
-export function sendResponse(res, statusCode, data) {
+function sendResponse(res, statusCode, data) {
   return res.status(statusCode)
     .setHeader('Content-Type', 'application/json')
     .setHeader('Access-Control-Allow-Origin', '*')
@@ -17,4 +15,3 @@ export function sendResponse(res, statusCode, data) {
     .setHeader('Access-Control-Max-Age', '86400')
     .setHeader('Cache-Control', 'no-cache')
     .json(data);
-}
