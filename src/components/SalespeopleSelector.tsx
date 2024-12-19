@@ -40,7 +40,7 @@ export function SalespeopleSelector({
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {salespeople.map((person) => (
           <div
-            key={person.calendarId}
+            key={person.calendarID}
             className={`p-3 border rounded-md ${
               selectedPeople.includes(person)
                 ? 'bg-blue-100 border-blue-500'
