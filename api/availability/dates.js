@@ -1,9 +1,10 @@
 const axios = require('axios');
-const { corsHeaders, sendResponse } = require('../utils/response');
+const { sendResponse } = require('../utils/response');
 
 const ACUITY_TIMEOUT = 15000; // 15 seconds
 
 module.exports = async function handler(req, res) {
+  // Handle preflight requests
   if (req.method === 'OPTIONS') {
     return sendResponse(res, 200, {});
   }
@@ -11,9 +12,7 @@ module.exports = async function handler(req, res) {
   console.log('[Vercel:Dates] Environment check:', {
     hasApiKey: !!process.env.ACUITY_API_KEY,
     hasUserId: !!process.env.ACUITY_USER_ID,
-    hasAppointmentType: !!process.env.APPOINTMENT_TYPE,
-    requestPath: req.url,
-    requestMethod: req.method
+    hasAppointmentType: !!process.env.APPOINTMENT_TYPE
   });
 
   const { month, calendarID } = req.query;
@@ -28,17 +27,13 @@ module.exports = async function handler(req, res) {
     return sendResponse(res, 500, { error: 'Missing API credentials' });
   }
 
-  const requestStart = Date.now();
-
   try {
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
-    console.log('[Vercel:Dates] Request details:', {
-      url: 'https://acuityscheduling.com/api/v1/availability/dates',
+    console.log('[Vercel:Dates] Making request:', {
       calendarID,
       month,
-      appointmentTypeID: process.env.APPOINTMENT_TYPE,
-      auth: auth.slice(-10) // Show last 10 chars of auth for debugging
+      appointmentTypeID: process.env.APPOINTMENT_TYPE
     });
 
     const response = await axios({
@@ -58,22 +53,15 @@ module.exports = async function handler(req, res) {
 
     console.log('[Vercel:Dates] Success:', {
       status: response.status,
-      dataLength: response.data?.length || 0,
-      responseTime: Date.now() - requestStart
+      dataLength: response.data?.length || 0
     });
+
     return sendResponse(res, 200, response.data);
   } catch (error) {
     console.error('[Vercel:Dates] Error:', {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data || error.message,
-      code: error.code,
-      config: {
-        url: error.config?.url,
-        headers: error.config?.headers,
-        params: error.config?.params
-      },
-      responseTime: Date.now() - requestStart
+      data: error.response?.data
     });
 
     return sendResponse(res, error.response?.status || 500, {
@@ -81,3 +69,4 @@ module.exports = async function handler(req, res) {
       details: error.response?.data || error.message
     });
   }
+};
