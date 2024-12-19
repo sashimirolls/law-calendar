@@ -12,25 +12,29 @@ module.exports = async (req, res) => {
   }
 
   console.log('[Vercel:Times] Environment check:', {
-    ACUITY_API_KEY: !!process.env.ACUITY_API_KEY,
-    ACUITY_USER_ID: !!process.env.ACUITY_USER_ID,
-    APPOINTMENT_TYPE: !!process.env.APPOINTMENT_TYPE
+    hasApiKey: !!process.env.ACUITY_API_KEY,
+    hasUserId: !!process.env.ACUITY_USER_ID,
+    hasAppointmentType: !!process.env.APPOINTMENT_TYPE,
+    requestPath: req.url,
+    requestMethod: req.method
   });
 
   const { date, calendarId } = req.query;
 
   if (!date || !calendarId) {
+    console.error('[Vercel:Times] Missing parameters:', { date, calendarId });
     return res.status(400).json({ error: 'Missing required parameters' });
   }
 
   if (!process.env.ACUITY_API_KEY || !process.env.ACUITY_USER_ID) {
+    console.error('[Vercel:Times] Missing credentials');
     return res.status(500).json({ error: 'Missing API credentials' });
   }
 
   try {
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
-    console.log('[Vercel:Availability:Times] Making Acuity request:', {
+    console.log('[Vercel:Times] Making Acuity request:', {
       calendarId,
       date,
       appointmentTypeID: process.env.APPOINTMENT_TYPE
@@ -41,7 +45,8 @@ module.exports = async (req, res) => {
       url: 'https://acuityscheduling.com/api/v1/availability/times',
       headers: {
         'Authorization': `Basic ${auth}`,
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       params: {
         date,
@@ -50,12 +55,17 @@ module.exports = async (req, res) => {
       }
     });
 
+    console.log('[Vercel:Times] Success:', {
+      status: response.status,
+      dataLength: response.data?.length || 0
+    });
     return res.status(200).json(response.data);
   } catch (error) {
-    console.error('[Vercel:Availability:Times] Error:', {
+    console.error('[Vercel:Times] Error:', {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
+      stack: error.stack
     });
 
     return res.status(error.response?.status || 500).json({
