@@ -1,29 +1,24 @@
-import axios from 'axios';
 import { TimeSlot } from '../types/acuity';
 import { Logger } from '../utils/logger';
-import { API_CONFIG } from './config';
 import { formatDate } from '../utils/date';
+import { acuityClient } from './acuity/client';
 
 export async function getAvailability(calendarId: string, date: string): Promise<TimeSlot[]> {
   try {
     Logger.debug('AcuityAPI', 'Fetching availability', { calendarId, date });
     
     // Test API connection first
-    const testResponse = await axios.get(`${API_CONFIG.BASE_URL}/test`);
+    const testResponse = await acuityClient.get('/test');
     Logger.debug('AcuityAPI', 'Test response:', testResponse.data);
 
     const formattedDate = formatDate(date);
 
     // First get available dates for the month
-    const datesResponse = await axios.get(`${API_CONFIG.BASE_URL}/dates`, {
+    const datesResponse = await acuityClient.get('/availability/dates', {
       params: {
         month: formattedDate.slice(0, 7), // YYYY-MM format
-        calendarID: calendarId, // Keep this as is since it's internal
-        appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
-      },
-      headers: {
-        'Accept': 'application/json',
-        'Cache-Control': 'no-cache'
+        calendarID: calendarId,
+        appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
 
@@ -35,15 +30,11 @@ export async function getAvailability(calendarId: string, date: string): Promise
     }
 
     // Get available times for the specific date
-    const timesResponse = await axios.get(`${API_CONFIG.BASE_URL}/times`, {
+    const timesResponse = await acuityClient.get('/availability/times', {
       params: {
         date: formattedDate,
-        calendarID: calendarId, // Keep this as is since it's internal
-        appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
-      },
-      headers: {
-        'Accept': 'application/json',
-        'Cache-Control': 'no-cache'
+        calendarID: calendarId,
+        appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
 
