@@ -15,3 +15,9 @@ function sendResponse(res, statusCode, data) {
     .setHeader('Access-Control-Max-Age', '86400')
     .setHeader('Cache-Control', 'no-cache')
     .json(data);
+}
+
+module.exports = {
+  corsHeaders,
+  sendResponse
+};
