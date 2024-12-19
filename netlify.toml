@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  functions = "./netlify/functions"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/*"
@@ -11,7 +11,8 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["axios"]
+  included_files = ["netlify/functions/**/*"]
+  external_node_modules = ["axios", "buffer"]
 
 [build.environment]
   NODE_VERSION = "18.0.0"
