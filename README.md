@@ -8,7 +8,7 @@ A React application that integrates with Acuity Scheduling to display available 
 - Select multiple salespeople
 - View overlapping availability
 - Responsive design with Tailwind CSS
-
+ 
 ## Development
 
 ```bash
