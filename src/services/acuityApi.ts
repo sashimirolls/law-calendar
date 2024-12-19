@@ -9,11 +9,11 @@ export async function getAvailability(calendarId: string, date: string): Promise
     Logger.debug('AcuityAPI', 'Fetching availability', { calendarId, date });
     const formattedDate = formatDate(date);
 
-    // First get available dates
+    // First get available dates for the month
     const datesResponse = await axios.get(`${API_CONFIG.BASE_URL}/dates`, {
       params: {
         month: formattedDate.slice(0, 7), // YYYY-MM format
-        calendarId,
+        calendarID: calendarId,
         appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
       },
       headers: {
@@ -22,18 +22,18 @@ export async function getAvailability(calendarId: string, date: string): Promise
       }
     });
 
-    // Check if the requested date is available
+    // Check if the requested date is in available dates
     const availableDates = datesResponse.data;
     if (!Array.isArray(availableDates) || !availableDates.some(d => d.date === formattedDate)) {
       Logger.debug('AcuityAPI', 'No availability for date:', formattedDate);
       return [];
     }
 
-    // Then get available times for the date
+    // Get available times for the specific date
     const timesResponse = await axios.get(`${API_CONFIG.BASE_URL}/times`, {
       params: {
         date: formattedDate,
-        calendarId,
+        calendarID: calendarId,
         appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
       },
       headers: {
