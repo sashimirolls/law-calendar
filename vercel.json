@@ -14,24 +14,36 @@
   "routes": [
     {
       "src": "/api/dates",
-      "dest": "/api/availability/dates.js",
+      "dest": "api/availability/dates.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept",
+        "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
         "Cache-Control": "no-cache"
       }
     },
     {
       "src": "/api/times",
-      "dest": "/api/availability/times.js",
+      "dest": "api/availability/times.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, Accept",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Max-Age": "86400",
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "api/$1.js",
+      "methods": ["GET", "POST", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
         "Cache-Control": "no-cache"
       }
