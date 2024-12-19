@@ -1,7 +1,9 @@
 import { TimeSlot } from '../types/acuity';
 import { Logger } from '../utils/logger';
 import { formatDate } from '../utils/date';
-import { acuityClient } from './acuity/client';
+import axios from 'axios';
+
+import { API_CONFIG } from './config';
 
 export async function getAvailability(calendarID: string, date: string): Promise<TimeSlot[]> {
   try {
@@ -11,7 +13,7 @@ export async function getAvailability(calendarID: string, date: string): Promise
     const month = formattedDate.slice(0, 7); // YYYY-MM format
 
     // Get available dates from Vercel API
-    const datesResponse = await acuityClient.get('/availability/dates', {
+    const datesResponse = await axios.get(`${API_CONFIG.BASE_URL}/dates`, {
       params: {
         month,
         calendarID,
@@ -27,7 +29,7 @@ export async function getAvailability(calendarID: string, date: string): Promise
     }
 
     // Get available times from Vercel API
-    const timesResponse = await acuityClient.get('/availability/times', {
+    const timesResponse = await axios.get(`${API_CONFIG.BASE_URL}/times`, {
       params: {
         date: formattedDate,
         calendarID,
