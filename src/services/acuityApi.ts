@@ -7,6 +7,11 @@ import { formatDate } from '../utils/date';
 export async function getAvailability(calendarId: string, date: string): Promise<TimeSlot[]> {
   try {
     Logger.debug('AcuityAPI', 'Fetching availability', { calendarId, date });
+    
+    // Test API connection first
+    const testResponse = await axios.get(`${API_CONFIG.BASE_URL}/test`);
+    Logger.debug('AcuityAPI', 'Test response:', testResponse.data);
+
     const formattedDate = formatDate(date);
 
     // First get available dates for the month
