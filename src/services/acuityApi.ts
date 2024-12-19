@@ -18,7 +18,7 @@ export async function getAvailability(calendarId: string, date: string): Promise
     const datesResponse = await axios.get(`${API_CONFIG.BASE_URL}/dates`, {
       params: {
         month: formattedDate.slice(0, 7), // YYYY-MM format
-        calendarID: calendarId,
+        calendarID: calendarId, // Keep this as is since it's internal
         appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
       },
       headers: {
@@ -38,7 +38,7 @@ export async function getAvailability(calendarId: string, date: string): Promise
     const timesResponse = await axios.get(`${API_CONFIG.BASE_URL}/times`, {
       params: {
         date: formattedDate,
-        calendarID: calendarId,
+        calendarID: calendarId, // Keep this as is since it's internal
         appointmentTypeID: API_CONFIG.ACUITY.APPOINTMENT_TYPE
       },
       headers: {
