@@ -3,9 +3,9 @@ import { Logger } from '../utils/logger';
 import { formatDate } from '../utils/date';
 import { acuityClient } from './acuity/client';
 
-export async function getAvailability(calendarId: string, date: string): Promise<TimeSlot[]> {
+export async function getAvailability(calendarID: string, date: string): Promise<TimeSlot[]> {
   try {
-    Logger.debug('AcuityAPI', 'Fetching availability', { calendarId, date });
+    Logger.debug('AcuityAPI', 'Fetching availability', { calendarID, date });
     
     // Test API connection first
     const testResponse = await acuityClient.get('/test');
@@ -17,7 +17,7 @@ export async function getAvailability(calendarId: string, date: string): Promise
     const datesResponse = await acuityClient.get('/availability/dates', {
       params: {
         month: formattedDate.slice(0, 7), // YYYY-MM format
-        calendarID: calendarId,
+        calendarID,
         appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
@@ -33,7 +33,7 @@ export async function getAvailability(calendarId: string, date: string): Promise
     const timesResponse = await acuityClient.get('/availability/times', {
       params: {
         date: formattedDate,
-        calendarID: calendarId,
+        calendarID,
         appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
