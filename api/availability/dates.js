@@ -12,25 +12,29 @@ module.exports = async (req, res) => {
   }
 
   console.log('[Vercel:Dates] Environment check:', {
-    ACUITY_API_KEY: !!process.env.ACUITY_API_KEY,
-    ACUITY_USER_ID: !!process.env.ACUITY_USER_ID,
-    APPOINTMENT_TYPE: !!process.env.APPOINTMENT_TYPE
+    hasApiKey: !!process.env.ACUITY_API_KEY,
+    hasUserId: !!process.env.ACUITY_USER_ID,
+    hasAppointmentType: !!process.env.APPOINTMENT_TYPE,
+    requestPath: req.url,
+    requestMethod: req.method
   });
 
   const { month, calendarId } = req.query;
 
   if (!month || !calendarId) {
+    console.error('[Vercel:Dates] Missing parameters:', { month, calendarId });
     return res.status(400).json({ error: 'Missing required parameters' });
   }
 
   if (!process.env.ACUITY_API_KEY || !process.env.ACUITY_USER_ID) {
+    console.error('[Vercel:Dates] Missing credentials');
     return res.status(500).json({ error: 'Missing API credentials' });
   }
 
   try {
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
-    console.log('[Vercel:Availability:Dates] Making Acuity request:', {
+    console.log('[Vercel:Dates] Making Acuity request:', {
       calendarId,
       month,
       appointmentTypeID: process.env.APPOINTMENT_TYPE
@@ -41,7 +45,8 @@ module.exports = async (req, res) => {
       url: 'https://acuityscheduling.com/api/v1/availability/dates',
       headers: {
         'Authorization': `Basic ${auth}`,
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       },
       params: {
         month,
@@ -50,12 +55,17 @@ module.exports = async (req, res) => {
       }
     });
 
+    console.log('[Vercel:Dates] Success:', {
+      status: response.status,
+      dataLength: response.data?.length || 0
+    });
     return res.status(200).json(response.data);
   } catch (error) {
-    console.error('[Vercel:Availability:Dates] Error:', {
+    console.error('[Vercel:Dates] Error:', {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data
+      data: error.response?.data,
+      stack: error.stack
     });
 
     return res.status(error.response?.status || 500).json({
