@@ -1,18 +1,7 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { acuityConfig } from './config';
 import { Logger } from '../../utils/logger';
-
-function getAuthHeader() {
-  const userId = import.meta.env.ACUITY_USER_ID;
-  const apiKey = import.meta.env.ACUITY_API_KEY;
-  
-  if (!userId || !apiKey) {
-    Logger.error('AcuityClient', 'Missing credentials');
-    return '';
-  }
-  
-  return `Basic ${Buffer.from(`${userId}:${apiKey}`).toString('base64')}`;
-}
+import { encodeBase64 } from '../../utils/encoding';
 
 function createAcuityClient() {
   const client = axios.create({
@@ -26,11 +15,6 @@ function createAcuityClient() {
   // Add request interceptor for logging
   client.interceptors.request.use(
     (config) => {
-      const auth = getAuthHeader();
-      if (auth) {
-        config.headers.Authorization = auth;
-      }
-      
       Logger.debug('AcuityClient', 'Request:', {
         method: config.method,
         url: config.url,
