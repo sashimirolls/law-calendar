@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const ACUITY_TIMEOUT = 15000; // 15 seconds
+
 export default async function handler(req, res) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -21,10 +23,10 @@ export default async function handler(req, res) {
     requestMethod: req.method
   });
 
-  const { date, calendarID } = req.query;
+  const { date, calendarId } = req.query;
 
-  if (!date || !calendarID) {
-    console.error('[Vercel:Times] Missing parameters:', { date, calendarID });
+  if (!date || !calendarId) {
+    console.error('[Vercel:Times] Missing parameters:', { date, calendarId });
     return res.status(400).json({ error: 'Missing required parameters' });
   }
 
@@ -34,11 +36,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    const requestStart = Date.now();
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
     console.log('[Vercel:Times] Request details:', {
       url: 'https://acuityscheduling.com/api/v1/availability/times',
-      calendarID,
+      calendarId,
       date,
       appointmentTypeID: process.env.APPOINTMENT_TYPE,
       auth: auth.slice(-10) // Show last 10 chars of auth for debugging
@@ -47,42 +50,44 @@ export default async function handler(req, res) {
     const response = await axios({
       method: 'GET',
       url: 'https://acuityscheduling.com/api/v1/availability/times',
+      timeout: ACUITY_TIMEOUT,
       headers: {
         'Authorization': `Basic ${auth}`,
         'Accept': 'application/json'
       },
       params: {
         date,
-        calendarID,
+        calendarID: calendarId,
         appointmentTypeID: process.env.APPOINTMENT_TYPE
       }
     });
 
     console.log('[Vercel:Times] Success:', {
       status: response.status,
-      dataLength: response.data?.length || 0
+      dataLength: response.data?.length || 0,
+      responseTime: Date.now() - requestStart
     });
-    return new Response(JSON.stringify(response.data), {
-      status: 200,
+    return res.status(200).json(response.data).set({
       headers
     });
   } catch (error) {
     console.error('[Vercel:Times] Error:', {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data || 'No response data',
+      data: error.response?.data || error.message,
+      code: error.code,
       config: {
         url: error.config?.url,
         headers: error.config?.headers,
         params: error.config?.params
-      }
+      },
+      responseTime: Date.now() - requestStart
     });
 
-    return new Response(JSON.stringify({
+    return res.status(error.response?.status || 500).json({
       error: 'Failed to fetch available times',
       details: error.response?.data || error.message
-    }), {
-      status: error.response?.status || 500,
+    }).set({
       headers
     });
   }
