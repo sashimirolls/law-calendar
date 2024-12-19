@@ -1,7 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { acuityConfig } from './config';
 import { Logger } from '../../utils/logger';
-import { encodeBase64 } from '../../utils/encoding';
 
 function createAcuityClient() {
   const client = axios.create({
@@ -42,8 +41,8 @@ function createAcuityClient() {
     (error) => {
       Logger.error('AcuityClient', 'Response Error:', {
         message: error.message,
-        status: error.response?.status,
-        data: error.response?.data
+        status: error.response?.status || 'No status',
+        data: error.response?.data || 'No data'
       });
       return Promise.reject(error);
     }
