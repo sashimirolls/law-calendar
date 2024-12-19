@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   };
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).json({}).set(headers);
+    return res.status(200).json({});
   }
 
   console.log('[Vercel:Dates] Environment check:', {
@@ -62,7 +62,10 @@ export default async function handler(req, res) {
       status: response.status,
       dataLength: response.data?.length || 0
     });
-    return res.status(200).json(response.data).set(headers);
+    return new Response(JSON.stringify(response.data), {
+      status: 200,
+      headers
+    });
   } catch (error) {
     console.error('[Vercel:Dates] Error:', {
       message: error.message,
@@ -75,9 +78,12 @@ export default async function handler(req, res) {
       }
     });
 
-    return res.status(error.response?.status || 500).json({
+    return new Response(JSON.stringify({
       error: 'Failed to fetch available dates',
       details: error.response?.data || error.message
-    }).set(headers);
+    }), {
+      status: error.response?.status || 500,
+      headers
+    });
   }
 }
