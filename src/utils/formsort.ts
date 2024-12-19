@@ -15,14 +15,17 @@ export function parseFormsortData(searchParams: URLSearchParams) {
   try {
     if (rawSalespeople) {
       // First decode the URI component
-      const decoded = decodeURIComponent(rawSalespeople);
+      const decoded = decodeURIComponent(rawSalespeople).replace('{{salesperson_selection}}', '');
       Logger.debug('Formsort', 'Decoded salespeople:', decoded);
       
-      // Split by comma or 'and'
-      salespeople = decoded
-        .split(/,|\s+and\s+/)
-        .map(s => s.trim())
-        .filter(Boolean);
+      // Only process if we have actual names
+      if (decoded && !decoded.includes('{{')) {
+        // Split by comma or 'and'
+        salespeople = decoded
+          .split(/,|\s+and\s+/)
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
       
       Logger.debug('Formsort', 'Parsed salespeople:', salespeople);
     }
