@@ -1,6 +1,6 @@
 export interface Salesperson {
   name: string;
-  calendarId: string;
+  calendarID: string;
 }
 
 export interface TimeSlot {
