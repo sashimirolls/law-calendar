@@ -1,14 +1,9 @@
-const axios = require('axios');
+const { corsHeaders } = require('../utils/headers');
+const { acuityRequest } = require('../utils/acuity');
 
-exports.handler = async (event, context) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS'
-  };
-
+exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+    return { statusCode: 200, headers: corsHeaders, body: '' };
   }
 
   const { month, calendarID } = event.queryStringParameters || {};
@@ -16,37 +11,22 @@ exports.handler = async (event, context) => {
   if (!month || !calendarID) {
     return {
       statusCode: 400,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({ error: 'Missing required parameters' })
     };
   }
 
   try {
-    const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
+    console.log('[Netlify:Dates] Making request:', { month, calendarID });
     
-    console.log('[Netlify:Dates] Making request:', {
+    const response = await acuityRequest('/availability/dates', {
       month,
-      calendarID,
-      appointmentTypeID: process.env.APPOINTMENT_TYPE
-    });
-
-    const response = await axios({
-      method: 'GET',
-      url: 'https://acuityscheduling.com/api/v1/availability/dates',
-      headers: { 
-        'Authorization': `Basic ${auth}`,
-        'Accept': 'application/json'
-      },
-      params: {
-        month,
-        calendarID,
-        appointmentTypeID: process.env.APPOINTMENT_TYPE
-      }
+      calendarID
     });
 
     return {
       statusCode: 200,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify(response.data)
     };
   } catch (error) {
@@ -54,7 +34,7 @@ exports.handler = async (event, context) => {
     
     return {
       statusCode: error.response?.status || 500,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({
         error: 'Failed to fetch available dates',
         details: error.response?.data || error.message
