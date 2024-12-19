@@ -1,18 +1,11 @@
 import axios from 'axios';
+import { corsHeaders, sendResponse } from '../utils/response';
 
 const ACUITY_TIMEOUT = 15000; // 15 seconds
 
 export default async function handler(req, res) {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
-    'Access-Control-Max-Age': '86400',
-    'Cache-Control': 'no-cache'
-  };
-
   if (req.method === 'OPTIONS') {
-    return res.status(200).json({});
+    return sendResponse(res, 200, {});
   }
 
   console.log('[Vercel:Dates] Environment check:', {
@@ -27,16 +20,17 @@ export default async function handler(req, res) {
 
   if (!month || !calendarID) {
     console.error('[Vercel:Dates] Missing parameters:', { month, calendarID });
-    return res.status(400).json({ error: 'Missing required parameters' });
+    return sendResponse(res, 400, { error: 'Missing required parameters' });
   }
 
   if (!process.env.ACUITY_API_KEY || !process.env.ACUITY_USER_ID) {
     console.error('[Vercel:Dates] Missing credentials');
-    return res.status(500).json({ error: 'Missing API credentials' });
+    return sendResponse(res, 500, { error: 'Missing API credentials' });
   }
 
+  const requestStart = Date.now();
+
   try {
-    const requestStart = Date.now();
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
     console.log('[Vercel:Dates] Request details:', {
@@ -67,9 +61,7 @@ export default async function handler(req, res) {
       dataLength: response.data?.length || 0,
       responseTime: Date.now() - requestStart
     });
-    return res.status(200).json(response.data).set({
-      headers
-    });
+    return sendResponse(res, 200, response.data);
   } catch (error) {
     console.error('[Vercel:Dates] Error:', {
       message: error.message,
@@ -84,11 +76,9 @@ export default async function handler(req, res) {
       responseTime: Date.now() - requestStart
     });
 
-    return res.status(error.response?.status || 500).json({
+    return sendResponse(res, error.response?.status || 500, {
       error: 'Failed to fetch available dates',
       details: error.response?.data || error.message
-    }).set({
-      headers
     });
   }
 }
