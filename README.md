@@ -10,7 +10,6 @@ A React application that integrates with Acuity Scheduling to display available 
 - Responsive design with Tailwind CSS
 
 
-
 ## Development
 
 ```bash
