@@ -1,14 +1,16 @@
 const axios = require('axios');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
-  res.setHeader('Access-Control-Max-Age', '86400');
-  res.setHeader('Cache-Control', 'no-cache');
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Accept',
+    'Access-Control-Max-Age': '86400',
+    'Cache-Control': 'no-cache'
+  };
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status(200).json({}).set(headers);
   }
 
   console.log('[Vercel:Dates] Environment check:', {
@@ -35,7 +37,7 @@ module.exports = async (req, res) => {
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
     console.log('[Vercel:Dates] Making Acuity request:', {
-      calendarId,
+      calendarID: calendarId,
       month,
       appointmentTypeID: process.env.APPOINTMENT_TYPE
     });
@@ -45,8 +47,7 @@ module.exports = async (req, res) => {
       url: 'https://acuityscheduling.com/api/v1/availability/dates',
       headers: {
         'Authorization': `Basic ${auth}`,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Accept': 'application/json'
       },
       params: {
         month,
@@ -59,7 +60,7 @@ module.exports = async (req, res) => {
       status: response.status,
       dataLength: response.data?.length || 0
     });
-    return res.status(200).json(response.data);
+    return res.status(200).json(response.data).set(headers);
   } catch (error) {
     console.error('[Vercel:Dates] Error:', {
       message: error.message,
@@ -71,6 +72,6 @@ module.exports = async (req, res) => {
     return res.status(error.response?.status || 500).json({
       error: 'Failed to fetch available dates',
       details: error.response?.data || error.message
-    });
+    }).set(headers);
   }
 };
