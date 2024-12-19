@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { corsHeaders, sendResponse } from '../utils/response';
+const axios = require('axios');
+const { corsHeaders, sendResponse } = require('../utils/response');
 
 const ACUITY_TIMEOUT = 15000; // 15 seconds
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     return sendResponse(res, 200, {});
   }
@@ -81,4 +81,3 @@ export default async function handler(req, res) {
       details: error.response?.data || error.message
     });
   }
-}
