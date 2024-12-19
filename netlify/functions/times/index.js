@@ -2,13 +2,19 @@ const { corsHeaders } = require('../utils/headers');
 const { acuityRequest } = require('../utils/acuity');
 
 exports.handler = async (event) => {
+  // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers: corsHeaders, body: '' };
+    return { 
+      statusCode: 204, 
+      headers: corsHeaders,
+      body: '' 
+    };
   }
 
   const { date, calendarID } = event.queryStringParameters || {};
 
   if (!date || !calendarID) {
+    console.error('[Netlify:Times] Missing parameters:', { date, calendarID });
     return {
       statusCode: 400,
       headers: corsHeaders,
