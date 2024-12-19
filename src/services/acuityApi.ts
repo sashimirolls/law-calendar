@@ -17,7 +17,7 @@ export async function getAvailability(calendarID: string, date: string): Promise
     const datesResponse = await acuityClient.get('/availability/dates', {
       params: {
         month: formattedDate.slice(0, 7), // YYYY-MM format
-        calendarID,
+        calendarId: calendarID,
         appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
@@ -33,7 +33,7 @@ export async function getAvailability(calendarID: string, date: string): Promise
     const timesResponse = await acuityClient.get('/availability/times', {
       params: {
         date: formattedDate,
-        calendarID,
+        calendarId: calendarID,
         appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
       }
     });
