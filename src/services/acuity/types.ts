@@ -10,7 +10,10 @@ export interface AcuityErrorResponse {
 
 export interface AcuityConfig {
   baseUrl: string;
-  apiKey: string;
-  userId: string;
-  appointmentType: string;
+  timeout: number;
+  retries: number;
+  headers: {
+    Accept: string;
+    'Cache-Control': string;
+  };
 }
