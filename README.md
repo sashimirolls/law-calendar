@@ -9,7 +9,7 @@ A React application that integrates with Acuity Scheduling to display available 
 - View overlapping availability
 - Responsive design with Tailwind CSS
 
-- 
+
 
 ## Development
 
