@@ -36,10 +36,12 @@ module.exports = async (req, res) => {
   try {
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
-    console.log('[Vercel:Dates] Making Acuity request:', {
+    console.log('[Vercel:Dates] Request details:', {
+      url: 'https://acuityscheduling.com/api/v1/availability/dates',
       calendarID: calendarId,
       month,
-      appointmentTypeID: process.env.APPOINTMENT_TYPE
+      appointmentTypeID: process.env.APPOINTMENT_TYPE,
+      auth: auth.slice(-10) // Show last 10 chars of auth for debugging
     });
 
     const response = await axios({
@@ -65,8 +67,12 @@ module.exports = async (req, res) => {
     console.error('[Vercel:Dates] Error:', {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data,
-      stack: error.stack
+      data: error.response?.data || 'No response data',
+      config: {
+        url: error.config?.url,
+        headers: error.config?.headers,
+        params: error.config?.params
+      }
     });
 
     return res.status(error.response?.status || 500).json({
