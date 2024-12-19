@@ -1,6 +1,6 @@
-const axios = require('axios');
+import axios from 'axios';
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -80,4 +80,4 @@ module.exports = async (req, res) => {
       details: error.response?.data || error.message
     }).set(headers);
   }
-};
+}
