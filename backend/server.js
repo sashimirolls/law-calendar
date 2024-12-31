@@ -6,15 +6,11 @@ import availabilityRoutes from './server/routes/availability.js';
 
 const app = express();
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control']
-}));
+app.use(cors());
 app.use(express.json());
 app.use(loggingMiddleware);
 app.use('/api', availabilityRoutes);
-app.use(express.static('public'));
+
 app.listen(serverConfig.port, () => {
   console.log(`Server running on port ${serverConfig.port}`);
 });
