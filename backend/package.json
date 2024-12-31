@@ -244,7 +244,7 @@
     "util-deprecate": "^1.0.2",
     "utils-merge": "^1.0.1",
     "vary": "^1.1.2",
-    "vite": "^5.4.11",
+
     "which": "^2.0.2",
     "word-wrap": "^1.2.5",
     "wrap-ansi": "^8.1.0",
