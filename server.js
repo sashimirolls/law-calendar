@@ -7,7 +7,7 @@ import availabilityRoutes from './server/routes/availability.js';
 const app = express();
 
 app.use(cors({
-  origin: 'https://chimerical-eclair-1c93b2.netlify.app',
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control']
 }));
