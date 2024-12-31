@@ -22,7 +22,7 @@ export async function getAvailability(calendarID: string, date: string): Promise
     });
 
     // Check if the requested date is in available dates
-    const availableDates = datesResponse.data.data.map((item: { date: any; }) => item.date);
+    const availableDates = datesResponse?.data?.data.map((item: { date: any; }) => item.date);
     if (!Array.isArray(availableDates)) {
       Logger.debug('AcuityAPI', 'No availability for date:', formattedDate);
       return [];
@@ -42,7 +42,7 @@ export async function getAvailability(calendarID: string, date: string): Promise
     //   return [];
     // }
 
-    const timesResponse = datesResponse.data.data.flatMap((item: { times: any[] }) =>
+    const timesResponse = datesResponse?.data?.data.flatMap((item: { times: any[] }) =>
       item.times.map((timeObj) => timeObj.time)
     );
     return timesResponse.map((slot: any) => ({
