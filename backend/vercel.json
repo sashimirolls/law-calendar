@@ -64,5 +64,16 @@
       "dest": "/index.html",
       "status": 200
     }
+  ],
+  "headers": [
+    {
+      "source": "/main.tsx",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/javascript"
+        }
+      ]
+    }
   ]
 }
