@@ -13,7 +13,7 @@ export async function getAvailability(calendarID: string, date: string): Promise
     const month = formattedDate.slice(0, 7); // YYYY-MM format
 
     // Get available dates from Vercel API
-    const datesResponse = await axios.get(`${API_CONFIG.BASE_URL}/dates`, {
+    const datesResponse = await axios.get(`${API_CONFIG.BASE_URL}/availability`, {
       params: {
         month,
         calendarID,
@@ -22,28 +22,31 @@ export async function getAvailability(calendarID: string, date: string): Promise
     });
 
     // Check if the requested date is in available dates
-    const availableDates = datesResponse.data;
+    const availableDates = datesResponse.data.data.map((item: { date: any; }) => item.date);
     if (!Array.isArray(availableDates)) {
       Logger.debug('AcuityAPI', 'No availability for date:', formattedDate);
       return [];
     }
 
     // Get available times from Vercel API
-    const timesResponse = await axios.get(`${API_CONFIG.BASE_URL}/times`, {
-      params: {
-        date: formattedDate,
-        calendarID,
-        appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
-      }
-    });
+    // const timesResponse = await axios.get(`${API_CONFIG.BASE_URL}/availability/times`, {
+    //   params: {
+    //     date: formattedDate,
+    //     calendarID,
+    //     appointmentTypeID: import.meta.env.APPOINTMENT_TYPE
+    //   }
+    // });
 
-    if (!Array.isArray(timesResponse.data)) {
-      Logger.error('AcuityAPI', 'Invalid times response format:', timesResponse.data);
-      return [];
-    }
+    // if (!Array.isArray(timesResponse.data)) {
+    //   Logger.error('AcuityAPI', 'Invalid times response format:', timesResponse.data);
+    //   return [];
+    // }
 
-    return timesResponse.data.map((slot: any) => ({
-      datetime: slot.time || slot.datetime,
+    const timesResponse = datesResponse.data.data.flatMap((item: { times: any[] }) =>
+      item.times.map((timeObj) => timeObj.time)
+    );
+    return timesResponse.map((slot: any) => ({
+      datetime: slot || slot.time || slot.datetime,
       isAvailable: true
     }));
   } catch (error) {
