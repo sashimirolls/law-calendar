@@ -23,7 +23,8 @@ module.exports = async (req, res) => {
     }
   });
 
-  const { date, calendarId } = req.query;
+  const date = req.query.month;
+  const calendarId = req.query.calendarID;
 
   // Validate environment variables
   if (!process.env.ACUITY_API_KEY || !process.env.ACUITY_USER_ID || !process.env.APPOINTMENT_TYPE) {
