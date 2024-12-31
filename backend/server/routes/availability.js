@@ -23,27 +23,52 @@ router.get('/availability', async (req, res) => {
   }
 
   try {
-    const response = await axios.get(
-      `${serverConfig.acuity.baseUrl}/availability/times`,
+    // Fetch available dates
+    const datesResponse = await axios.get(
+      `${serverConfig.acuity.baseUrl}/availability/dates`,
       {
         auth: {
           username: serverConfig.acuity.userId,
           password: serverConfig.acuity.apiKey
         },
         params: {
-          date,
+          month: date,
           calendarID: calendarId,
           appointmentTypeID: serverConfig.acuity.appointmentType
         }
       }
     );
 
-    console.log('[Acuity] Successful response:', {
-      status: response.status,
-      slots: response.data?.length || 0
-    });
+    const dates = datesResponse.data;
 
-    res.json(response.data);
+    // Fetch time slots for each date
+    const timeSlotPromises = dates.map((dateObj) =>
+      axios.get(
+        `${serverConfig.acuity.baseUrl}/availability/times`,
+        {
+          auth: {
+            username: serverConfig.acuity.userId,
+            password: serverConfig.acuity.apiKey
+          },
+          params: {
+            date: dateObj.date,
+            calendarID: calendarId,
+            appointmentTypeID: serverConfig.acuity.appointmentType
+          }
+        }
+      ).then(response => ({
+        date: dateObj.date,
+        times: response.data
+      }))
+      .catch(error => {
+        console.error(`[Acuity] Error fetching times for ${dateObj.date}:`, error.message);
+        return { date: dateObj.date, times: [] };
+      })
+    );
+
+    const timeSlots = await Promise.all(timeSlotPromises);
+
+    res.json({ status: 200, data: timeSlots });
   } catch (error) {
     console.error('[Acuity] API Error:', {
       message: error.message,
