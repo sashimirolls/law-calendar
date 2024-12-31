@@ -157,6 +157,7 @@
     "natural-compare": "^1.4.0",
     "negotiator": "^0.6.3",
     "node-releases": "^2.0.19",
+    "nodemon": "^3.1.9",
     "normalize-path": "^3.0.0",
     "normalize-range": "^0.1.2",
     "object-assign": "^4.1.1",
@@ -244,7 +245,7 @@
     "util-deprecate": "^1.0.2",
     "utils-merge": "^1.0.1",
     "vary": "^1.1.2",
-
+    "vite": "^5.4.11",
     "which": "^2.0.2",
     "word-wrap": "^1.2.5",
     "wrap-ansi": "^8.1.0",
@@ -253,7 +254,6 @@
     "yaml": "^2.7.0",
     "yocto-queue": "^0.1.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
