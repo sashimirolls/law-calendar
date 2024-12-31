@@ -5,8 +5,9 @@ import { serverConfig } from '../config.js';
 const router = express.Router();
 
 router.get('/availability', async (req, res) => {
-  const { date, calendarId } = req.query;
-  
+  const date = req.query.month;
+  const calendarId = req.query.calendarID;
+
   console.log('[Acuity] Fetching availability:', {
     date,
     calendarId,
