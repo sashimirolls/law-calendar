@@ -20,7 +20,7 @@ export function useAvailability(selectedPeople: Salesperson[]) {
         
         const today = new Date().toISOString().split('T')[0];
         const availabilityPromises = selectedPeople.map(person =>
-          getAvailability(person.calendarId, today)
+          getAvailability(person.calendarID, today)
         );
 
         const results = await Promise.all(availabilityPromises);
