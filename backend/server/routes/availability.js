@@ -42,6 +42,11 @@ router.get('/availability', async (req, res) => {
     const dates = datesResponse.data;
 
     // Fetch time slots for each date
+    if (!dates || dates.length === 0) {
+     console.log('[Acuity] No dates available to fetch times for.');
+     return res.json({ status: 200, data: dates || [] });
+     }
+    
     const timeSlotPromises = dates.map((dateObj) =>
       axios.get(
         `${serverConfig.acuity.baseUrl}/availability/times`,
