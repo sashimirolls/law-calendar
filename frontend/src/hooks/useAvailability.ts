@@ -11,34 +11,60 @@ export function useAvailability(selectedPeople: Salesperson[]) {
   useEffect(() => {
     async function fetchSlots() {
       if (selectedPeople.length === 0) return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         Logger.debug('useAvailability', 'Fetching for:', selectedPeople);
-        
-        const today = new Date().toISOString().split('T')[0];
-        const availabilityPromises = selectedPeople.map(person =>
-          getAvailability(person.calendarID, today)
-        );
 
+        // 30 days from current date
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() + 30);
+
+        // 180 days from current date
+        let endDate = new Date();
+        endDate.setDate(startDate.getDate() + 181);
+
+        // Get availability from 30 to 180 days from current date
+        let availabilityPromises: Promise<TimeSlot[]>[] = [];
+        while (startDate <= endDate) {
+          const today = startDate.toISOString().split('T')[0];
+          availabilityPromises.push(
+            ...selectedPeople.map(person => getAvailability(person.calendarID, today))
+          );
+          startDate.setDate(startDate.getDate() + 30); // move to next month
+        }
+
+        // Fetch all availability in parallel
         const results = await Promise.all(availabilityPromises);
-        
-        // Filter out any null or undefined results
-        const validResults = results.filter(result => Array.isArray(result));
-        
-        if (validResults.length === 0) {
+
+        console.log('results:', results);
+
+        // Now `results` will be an array of arrays, each containing availability for a single salesperson
+        // To merge those arrays without nesting, we'll ensure to keep everything within the same level.
+
+        const allSlots = results.reduce((acc, current) => acc.concat(current), []); // Merge arrays in `results`
+
+        // Filter out invalid or empty results
+        const validSlots = allSlots.filter(slot => slot != null);
+
+        // If no valid slots, return early
+        if (validSlots.length === 0) {
           setSlots([]);
           return;
         }
-        
-        // Find overlapping time slots
-        const mergedSlots = validResults[0].filter(slot =>
-          validResults.every(personSlots =>
-            personSlots.some(ps => ps.datetime === slot.datetime)));
+
+        // If you're looking for overlapping slots for all selected salespeople:
+        const mergedSlots = validSlots.filter(slot =>
+          selectedPeople.every(person =>
+            validSlots.some(ps => ps.datetime === slot.datetime)
+          )
+        );
 
         Logger.debug('useAvailability', 'Merged slots:', mergedSlots);
+
+        // Set the merged slots to the state
         setSlots(mergedSlots);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to fetch availability';
