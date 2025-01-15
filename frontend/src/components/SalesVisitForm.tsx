@@ -168,9 +168,9 @@ const SalesVisitForm: React.FC = () => {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#cce6ff'} // On hover background color change
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = selectedSalespeople.some(selected => selected.calendarID === sp.calendarID) ? '#e0f7ff' : 'transparent'} // Revert background color when mouse leaves
             >
-              {/* <input
+              <input
                 type="checkbox"
-                // checked={selectedSalespeople.some(selected => selected.calendarId == sp.calendarID)}
+               checked={selectedSalespeople.some(selected => selected.calendarId == sp.calendarID)}
                 onChange={() => handleSalespersonSelect(sp)}
                 disabled={selectedSalespeople.length >= 2 && !selectedSalespeople.some(selected => selected.calendarId === sp.calendarID)}
                 id={`checkbox-${sp.calendarID}`}  // Unique ID for each checkbox
@@ -180,7 +180,7 @@ const SalesVisitForm: React.FC = () => {
                   marginRight: '10px',
                   cursor: 'pointer',
                 }}
-              /> */}
+              />
             
   <input
     type="checkbox"
