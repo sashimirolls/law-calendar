@@ -51,31 +51,31 @@ const SalesVisitForm: React.FC = () => {
     setStep(1);
   };
 
-  // const handleSalespersonSelect = (salesperson: Salesperson) => {
-  //   console.log("Selected salesperson:", salesperson);
-  //   console.log("Already Selected salespeople:", selectedSalespeople);
-  //   const isSelected = selectedSalespeople.some(sp => sp.calendarID === salesperson.calendarID);
+  const handleSalespersonSelect = (salesperson: Salesperson) => {
+    console.log("Selected salesperson:", salesperson);
+    console.log("Already Selected salespeople:", selectedSalespeople);
+    const isSelected = selectedSalespeople.some(sp => sp.calendarID === salesperson.calendarID);
   
-  //   if (isSelected) {
-  //     // Remove salesperson if they are already selected
-  //     setSelectedSalespeople(selectedSalespeople.filter(sp => sp.calendarID !== salesperson.calendarID));
-  //   } else if (selectedSalespeople.length < 2) {
-  //     // Add salesperson if fewer than 2 are selected
-  //     setSelectedSalespeople([...selectedSalespeople, salesperson]);
-  //   }
-  // };
+    if (isSelected) {
+      // Remove salesperson if they are already selected
+      setSelectedSalespeople(selectedSalespeople.filter(sp => sp.calendarID !== salesperson.calendarID));
+    } else if (selectedSalespeople.length < 2) {
+      // Add salesperson if fewer than 2 are selected
+      setSelectedSalespeople([...selectedSalespeople, salesperson]);
+    }
+  };
     
 
 
-  // useEffect(() => {
-  //   // Update URL parameter when selectedSalespeople changes
-  //   const salespeopleParam = selectedSalespeople
-  //     .map(sp => `${sp.name.split(' ')[0]} ${sp.name.split(' ')[1]}`) // Include both first and last names
-  //     .join(',');
-  //   const url = new URL(window.location.href);
-  //   url.searchParams.set('salespeople', salespeopleParam);
-  //   window.history.pushState({}, '', url.toString());
-  // }, [selectedSalespeople]);
+  useEffect(() => {
+    // Update URL parameter when selectedSalespeople changes
+    const salespeopleParam = selectedSalespeople
+      .map(sp => `${sp.name.split(' ')[0]} ${sp.name.split(' ')[1]}`) // Include both first and last names
+      .join(',');
+    const url = new URL(window.location.href);
+    url.searchParams.set('salespeople', salespeopleParam);
+    window.history.pushState({}, '', url.toString());
+  }, [selectedSalespeople]);
 
   return (
     <div style={{
