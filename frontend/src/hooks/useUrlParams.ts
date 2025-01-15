@@ -7,6 +7,7 @@ export function useUrlParams() {
 
   useEffect(() => {
     function handleUrlChange() {
+      console.log("UR:");
       Logger.debug('useUrlParams', 'URL changed, updating params');
       setParams(parseUrlParameters());
     }

@@ -6,6 +6,9 @@ import { ErrorDisplay } from './ErrorDisplay';
 import { LoadingDisplay } from './LoadingDisplay';
 import { useApp } from '../contexts/AppContext';
 import { Calendar as LucideCalendar } from 'lucide-react';
+import SalesVisitForm from './SalesVisitForm';
+import Header from './Header';
+import Footer from './Footer'
 
 export function AppContent() {
   const { state, availability } = useApp();
@@ -13,6 +16,8 @@ export function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
+      <Header />
+      <SalesVisitForm />
       {(state.error || error) && <ErrorDisplay error={state.error || error} />}
       {loading && <LoadingDisplay />}
 
@@ -27,10 +32,10 @@ export function AppContent() {
           />
 
           {state.selectedPeople.length > 0 && (
-            <Calendar availableSlots={slots} onTimeSelect={() => {}} />
+            <Calendar availableSlots={slots} onTimeSelect={() => { }} />
           )}
-          
-            {/* <div className="bg-white rounded-lg shadow p-6 mb-6">
+
+          {/* <div className="bg-white rounded-lg shadow p-6 mb-6">
               <div className="flex items-center gap-2 mb-6">
                 <LucideCalendar className="w-6 h-6 text-blue-600" />
                 <h2 className="text-xl font-semibold">Schedule an Appointment</h2>
@@ -39,6 +44,7 @@ export function AppContent() {
             </div> */}
         </>
       )}
+      <Footer />
     </div>
   );
 }

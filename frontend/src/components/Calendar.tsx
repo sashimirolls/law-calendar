@@ -7,6 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Salesperson } from '../types/acuity'; // Import the type for Salesperson
 import { salespeople } from '../config/salespeople'; // Import the salespeople array
 import { Calendar as LucideCalendar } from 'lucide-react';
+import RecurringAppointmentModal from './RecurringAppointmenModal';
 
 interface TimeSlot {
   datetime: string;
@@ -28,22 +29,71 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [addedTimes, setAddedTimes] = useState<string[]>([]);
+  const [showRecurringModal, setShowRecurringModal] = useState(false);
 
   const today = new Date();
+  const handleRecurringClick = () => {
+    setShowRecurringModal(true);
+  };
 
+  const handleCloseRecurringModal = () => {
+    setShowRecurringModal(false);
+  };
+
+  // const handleSaveRecurring = (frequency, recurringTimes) => {
+  //   console.log("Recurring Frequency: ", frequency);
+  //   console.log("Recurring Times: ", recurringTimes);
+  //   setShowRecurringModal(false);
+  // };
+  // const groupSlotsByDate = (slots: TimeSlot[]) => {
+  //   console.log("Slots: ", slots);
+  //   return slots.reduce((acc: Record<string, TimeSlot[]>, slot) => {
+  //     const date = new Date(slot.datetime);
+  //     const localDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+  //       .toString()
+  //       .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+  //     if (!acc[localDate]) acc[localDate] = [];
+  //     acc[localDate].push(slot);
+  //     return acc;
+  //   }, {});
+  // };
   const groupSlotsByDate = (slots: TimeSlot[]) => {
+    console.log("Slots: ", slots);
+  
     return slots.reduce((acc: Record<string, TimeSlot[]>, slot) => {
       const date = new Date(slot.datetime);
       const localDate = `${date.getFullYear()}-${(date.getMonth() + 1)
         .toString()
         .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-      if (!acc[localDate]) acc[localDate] = [];
-      acc[localDate].push(slot);
+  
+      // Only consider available slots
+      // if (slot.isAvailable){
+        if (!acc[localDate]) {
+          acc[localDate] = [];
+        }
+  
+        // Check for duplicate slots (same datetime on the same date)
+        const existingSlotIndex = acc[localDate].findIndex(
+          (existingSlot) => existingSlot.datetime === slot.datetime
+        );
+  
+        // If the slot is not already present, add it to the accumulator
+        if (existingSlotIndex === -1) {
+          acc[localDate].push(slot);
+        } else if (acc[localDate].length === 2) {
+          // If two identical slots exist, filter out the duplicate
+          acc[localDate] = acc[localDate].filter(
+            (existingSlot) => existingSlot.datetime !== slot.datetime
+          );
+        }
+      // }
+  
       return acc;
     }, {});
   };
 
   const groupedSlots = groupSlotsByDate(availableSlots);
+  console.log("groupedSlots: ", groupedSlots);
 
   const handleDateClick = (date: Date) => {
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
@@ -132,12 +182,18 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
     if (tab === "yourInfo" && (selectedTime || addedTimes.length > 0)) {
       setActiveTab(tab);
     }
+
+    if (tab == "chooseAppointment" && activeTab == "confirmation") {
+      // setSelectedDate(new Date());  // Or set it to the previously selected date
+      setSelectedTime("");
+      setActiveTab(tab);
+    }
   };
 
-  // const handleAndBook = () => {
-  //   handleAddAnotherTime();
-  //   setActiveTab("yourInfo");
-  // }
+  const handleAndBook = () => {
+    handleAddAnotherTime();
+    setActiveTab("yourInfo");
+  }
 
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [confirmationURL, setConfirmationURL] = useState("");
@@ -246,6 +302,7 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
 
     const sanitizedBaseUrl = API_CONFIG.BASE_URL.replace(/\/api$/, '');
 
+    console.log("Matched calendar ids: ", matchedCalendarIDs);
     const formDetails = timesToSubmit.map(time => ({
       appointmentTypeID: "71960849",
       datetime: time,
@@ -269,6 +326,9 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
         responses.forEach(response => {
           response.json().then(data => console.log('Response:', data));
         });
+
+        // Remove the selected times from the available slots
+        // availableSlots = availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime));
 
         // Clear the form
         setFirstName("");
@@ -331,21 +391,18 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
         <div className="flex space-x-6 relative">
           <button
             className={`w-1/3 py-2 text-center ${activeTab === "chooseAppointment" ? "text-blue-500 border-b-4 border-blue-500" : "text-black"}`}
-            onClick={() => setActiveTab("chooseAppointment")}
             disabled
           >
             Choose Appointment
           </button>
           <button
             className={`w-1/3 py-2 text-center ${activeTab === "yourInfo" ? "text-blue-500 border-b-4 border-blue-500" : "text-black"}`}
-            onClick={() => handleTabSwitch("yourInfo")}
             disabled={!selectedTime}
           >
             Your Info
           </button>
           <button
             className={`w-1/3 py-2 text-center ${activeTab === "confirmation" ? "text-blue-500 border-b-4 border-blue-500" : "text-black"}`}
-            onClick={() => setActiveTab("confirmation")}
             disabled
           >
             Confirmation
@@ -398,7 +455,7 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
                         <h4 className="font-semibold text-lg">Select:</h4>
                         <ul className="list-none">
                           <li
-                            onClick={() => setActiveTab("yourInfo")} // Switch to "Your Info" tab when selected
+                            onClick={handleAndBook} // Switch to "Your Info" tab when selected
                             className="py-2 px-4 hover:bg-blue-200 cursor-pointer"
                           >
                             Select and Continue
@@ -409,12 +466,12 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
                           >
                             Select and Add Another Time
                           </li>
-                          {/* <li
-                            onClick={() => console.log("Select and Make Recurring selected")}
+                          <li
+                            onClick={handleRecurringClick}
                             className="py-2 px-4 hover:bg-blue-200 cursor-pointer"
                           >
                             Select and Make Recurring
-                          </li> */}
+                          </li>
                         </ul>
                       </div>
                     )}
@@ -456,7 +513,7 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
                 </h4>
               )}
             </div>
-            
+
             <form className="space-y-4 max-w-full mx-auto">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex flex-col w-full md:w-1/2">
@@ -508,13 +565,19 @@ export function Calendar({ availableSlots, onTimeSelect }: CalendarProps) {
           <div className="text-left">
             <h3 className="text-xl font-bold mb-4">Appointment Scheduled Successfully</h3>
             <button
-              onClick={() => setActiveTab("chooseAppointment")}
+              onClick={() => handleTabSwitch("chooseAppointment")}
               className="text-black underline hover:text-blue-500"
             >
               Back to Calendar
             </button>
             {/* <iframe src={confirmationURL} className="w-full h-screen" title="Confirmation"></iframe> */}
           </div>
+        )}
+
+
+        {/*Last option*/}
+        {showRecurringModal && (
+          <RecurringAppointmentModal selectedDate={selectedDate} selectedTime={selectedTime} onClose={handleCloseRecurringModal} onAddAppointment={() => setShowRecurringModal(false)} />
         )}
       </div>
     </div>

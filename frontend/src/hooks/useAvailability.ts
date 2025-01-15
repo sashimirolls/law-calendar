@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { TimeSlot, Salesperson } from '../types/acuity';
 import { getAvailability } from '../services/acuityApi';
 import { Logger } from '../utils/logger';
+import { API_CONFIG } from '../services/config';
 
 export function useAvailability(selectedPeople: Salesperson[]) {
   const [slots, setSlots] = useState<TimeSlot[]>([]);
@@ -20,11 +21,11 @@ export function useAvailability(selectedPeople: Salesperson[]) {
 
         // 30 days from current date
         const startDate = new Date();
-        startDate.setDate(startDate.getDate() + 30);
+        startDate.setDate(startDate.getDate() + API_CONFIG.startDate);
 
         // 180 days from current date
         let endDate = new Date();
-        endDate.setDate(startDate.getDate() + 181);
+        endDate.setDate(startDate.getDate() + API_CONFIG.endDate);
 
         // Get availability from 30 to 180 days from current date
         let availabilityPromises: Promise<TimeSlot[]>[] = [];
@@ -38,7 +39,7 @@ export function useAvailability(selectedPeople: Salesperson[]) {
 
         // Fetch all availability in parallel
         const results = await Promise.all(availabilityPromises);
-
+        console.log('selectedPeople lengtg:', selectedPeople.length);
         console.log('results:', results);
 
         // Now `results` will be an array of arrays, each containing availability for a single salesperson
