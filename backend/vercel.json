@@ -9,7 +9,7 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist" // Or your build output directory
+        "distDir": "dist" 
       }
     }
   ],
@@ -34,7 +34,7 @@
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
-        "Cache-Control": "no-cache" // If needed
+        "Cache-Control": "no-cache"
       }
     },
     {
@@ -46,11 +46,10 @@
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
-        "Cache-Control": "no-cache" // If needed
-      }
+        "Cache-Control": "no-cache"
     },
     {
-      "src": "/api/(.*)", // Catches all other /api routes
+      "src": "/api/(.*)",
       "dest": "api/$1.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
@@ -58,12 +57,12 @@
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
-        "Cache-Control": "no-cache" // If needed
+        "Cache-Control": "no-cache"
       }
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html", // Handles client-side routing
+      "dest": "/index.html",
       "status": 200
     }
   ]
