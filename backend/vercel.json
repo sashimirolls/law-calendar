@@ -8,9 +8,7 @@
     {
       "src": "package.json",
       "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist" 
-      }
+      "config": { "distDir": "dist" }
     }
   ],
   "routes": [
@@ -19,7 +17,7 @@
       "dest": "api/test.js",
       "methods": ["GET", "OPTIONS"],
       "headers": {
-        "Access-Control-Allow-Origin": "https://chimerical-eclair-1c93b2.netlify.app",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400"
@@ -30,7 +28,7 @@
       "dest": "api/availability/dates.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
-        "Access-Control-Allow-Origin": "https://chimerical-eclair-1c93b2.netlify.app",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
@@ -42,18 +40,19 @@
       "dest": "api/availability/times.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
-        "Access-Control-Allow-Origin": "https://chimerical-eclair-1c93b2.netlify.app",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
         "Cache-Control": "no-cache"
+      }
     },
     {
       "src": "/api/(.*)",
       "dest": "api/$1.js",
       "methods": ["GET", "POST", "OPTIONS"],
       "headers": {
-        "Access-Control-Allow-Origin": "https://chimerical-eclair-1c93b2.netlify.app",
+        "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "*",
         "Access-Control-Max-Age": "86400",
@@ -64,6 +63,17 @@
       "src": "/(.*)",
       "dest": "/index.html",
       "status": 200
+    }
+  ],
+  "headers": [
+    {
+      "source": "/main.tsx",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/javascript"
+        }
+      ]
     }
   ]
 }
