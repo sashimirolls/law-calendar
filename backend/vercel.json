@@ -4,11 +4,6 @@
     {
       "src": "api/**/*.js",
       "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
     }
   ],
   "routes": [
@@ -58,22 +53,6 @@
         "Access-Control-Max-Age": "86400",
         "Cache-Control": "no-cache"
       }
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html",
-      "status": 200
-    }
-  ],
-  "headers": [
-    {
-      "source": "/main.tsx",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/javascript"
-        }
-      ]
     }
   ]
 }
