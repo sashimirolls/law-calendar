@@ -1,6 +1,6 @@
-import axios from 'axios';
+const axios = require('axios');
 
-export default async (req, res) => {
+module.exports = async (req, res) => {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -71,7 +71,6 @@ export default async (req, res) => {
       dataLength: response.data?.length || 0
     });
 
-    console.log("response: ",response);
     return res.status(200).json(response.data);
   } catch (error) {
     console.error('[Vercel:Availability] Error:', {

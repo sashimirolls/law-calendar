@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { sendResponse } from '../utils/response';
+const axios = require('axios');
+const { sendResponse } = require('../utils/response');
 
 const ACUITY_TIMEOUT = 15000; // 15 seconds
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     return sendResponse(res, 200, {});

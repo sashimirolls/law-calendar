@@ -14,4 +14,7 @@ function sendResponse(res, statusCode, data) {
   return res.status(statusCode).json(data);
 }
 
-export default {corsHeaders, sendResponse};
+module.exports = {
+  corsHeaders,
+  sendResponse
+};
