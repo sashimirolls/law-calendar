@@ -3,7 +3,7 @@ import { sendResponse } from '../utils/response';
 
 const ACUITY_TIMEOUT = 15000; // 15 seconds
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     return sendResponse(res, 200, {});
