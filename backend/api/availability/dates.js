@@ -1,5 +1,5 @@
-const axios = require('axios');
-const { sendResponse } = require('../utils/response');
+import axios from 'axios';
+import { sendResponse } from '../utils/response';
 
 const ACUITY_TIMEOUT = 15000; // 15 seconds
 
