@@ -71,7 +71,7 @@ export default async (req, res) => {
       dataLength: response.data?.length || 0
     });
 
-    console.log("response>>>>>>>>>>>>>>>>.: ",response.data);
+    console.log("response>>>>>>>>>>>>>>>>.: ",process.env);
     return res.status(200).json(response.data);
   } catch (error) {
     console.error('[Vercel:Availability] Error:', {
