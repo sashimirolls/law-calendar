@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect}from 'react';
 import { Users, AlertCircle } from 'lucide-react';
 import { Salesperson } from '../types/acuity';
 import { Logger } from '../utils/logger';
@@ -20,6 +20,11 @@ export function SalespeopleSelector({
     selectedCount: selectedPeople.length,
     readOnly 
   });
+  
+  useEffect(() => {
+    console.log('Selected people changed:', selectedPeople);
+    // Update calendar logic based on selectedPeople
+  }, [selectedPeople]);
 
   return (
     <div className="bg-white rounded-lg shadow p-6 mb-6">
