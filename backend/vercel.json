@@ -73,16 +73,5 @@
                 "Cache-Control": "no-cache"
             }
         }
-    ],
-    "headers": [
-    {
-      "source": "/main.tsx",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/javascript"
-        }
-      ]
-    }
-  ]
+    ]
 }
