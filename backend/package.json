@@ -255,7 +255,8 @@
     "yocto-queue": "^0.1.0"
   },
   "scripts": {
-    "vercel-build": "npm run build", 
+    "build": "echo 'No build step needed'",
+    "vercel-build": "echo 'No build step needed'"
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
