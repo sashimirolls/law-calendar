@@ -62,7 +62,7 @@ export default async (req, res) => {
       params: {
         date,
         calendarID: calendarId,
-        appointmentTypeID: process.env.APPOINTMENT_TYPE
+        appointmentTypeID:71960849
       }
     });
 
