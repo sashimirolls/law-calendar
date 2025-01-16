@@ -69,7 +69,6 @@ router.get('/availability', async (req, res) => {
 
     const timeSlots = await Promise.all(timeSlotPromises);
 
-    console.log("slote" , timeSlots);
     res.json({ status: 200, data: timeSlots });
   } catch (error) {
     console.error('[Acuity] API Error:', {
