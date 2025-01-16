@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { salespeople } from '../config/salespeople';
+import { useApp } from '../contexts/AppContext';
 
 interface FormData {
   firstName: string;
@@ -66,17 +67,48 @@ const SalesVisitForm: React.FC = () => {
   };
     
 
+  const { state, state: { updateParams } } = useApp();
+  // useEffect(() => {
+  //   // Update URL parameter when selectedSalespeople changes
+  //   const salespeopleParam = selectedSalespeople
+  //     .map(sp => `${sp.name.split(' ')[0]} ${sp.name.split(' ')[1]}`) // Include both first and last names
+  //     .join(',');
+  //   const url = new URL(window.location.href);
+  //   url.searchParams.set('salespeople', salespeopleParam);
+  //   window.history.pushState({}, '', url.toString());
+  //   const updatedParams = {
+  //     ...state,
+  //     selectedPeople: selectedSalespeople,
+  //   };
+  //   updateParams(updatedParams); // Update URL params and context
+  // }, [selectedSalespeople]);
 
   useEffect(() => {
     // Update URL parameter when selectedSalespeople changes
     const salespeopleParam = selectedSalespeople
       .map(sp => `${sp.name.split(' ')[0]} ${sp.name.split(' ')[1]}`) // Include both first and last names
       .join(',');
+  
     const url = new URL(window.location.href);
-    url.searchParams.set('salespeople', salespeopleParam);
-    window.history.pushState({}, '', url.toString());
-  }, [selectedSalespeople]);
-
+    
+    // Set or replace the 'salespeople' parameter
+    if (salespeopleParam) {
+      url.searchParams.set('salespeople', salespeopleParam);
+    } else {
+      url.searchParams.delete('salespeople'); // Remove the parameter if no salespeople are selected
+    }
+  
+    // Update the URL without refreshing the page
+    window.history.replaceState({}, '', url.toString());
+  
+    // Update context state
+    const updatedParams = {
+      ...state,
+      selectedPeople: selectedSalespeople,
+    };
+    updateParams(updatedParams);
+  }, [selectedSalespeople, state, updateParams]);
+  
   return (
     <div style={{
       maxWidth: '600px',
