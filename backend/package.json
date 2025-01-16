@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "type":"module",
   "description": "law-calender for appointment booking",
   "main": "server.js",
   "dependencies": {
