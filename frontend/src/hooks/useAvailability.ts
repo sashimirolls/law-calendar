@@ -21,11 +21,11 @@ export function useAvailability(selectedPeople: Salesperson[]) {
 
         // 30 days from current date
         const startDate = new Date();
-        startDate.setDate(startDate.getDate() + 30);
+        startDate.setDate(startDate.getDate() + API_CONFIG.startDate);
 
         // 180 days from current date
         let endDate = new Date();
-        endDate.setDate(startDate.getDate() + 181);
+        endDate.setDate(startDate.getDate() + API_CONFIG.endDate);
 
         // Get availability from 30 to 180 days from current date
         let availabilityPromises: Promise<TimeSlot[]>[] = [];
