@@ -11,7 +11,7 @@
       "config": { "distDir": "dist" }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
       "src": "/api/test",
       "dest": "api/test.js",
