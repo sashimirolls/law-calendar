@@ -7,7 +7,7 @@ import appointmentRoutes from './server/routes/appointment.js';
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: 'https://chimerical-eclair-1c93b2.netlify.app' }));
 app.use(express.json());
 app.use(loggingMiddleware);
 app.use('/api', availabilityRoutes);
