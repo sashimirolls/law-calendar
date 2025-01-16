@@ -11,67 +11,52 @@
       "config": { "distDir": "dist" }
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/test",
-      "dest": "api/test.js",
-      "methods": ["GET", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, OPTIONS",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Max-Age": "86400"
-      }
+      "source": "/api/test",
+      "destination": "/api/test.js"
     },
     {
-      "src": "/api/dates",
-      "dest": "api/availability/dates.js",
-      "methods": ["GET", "POST", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Max-Age": "86400",
-        "Cache-Control": "no-cache"
-      }
+      "source": "/api/dates",
+      "destination": "/api/availability/dates.js"
     },
     {
-      "src": "/api/times",
-      "dest": "api/availability/times.js",
-      "methods": ["GET", "POST", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Max-Age": "86400",
-        "Cache-Control": "no-cache"
-      }
+      "source": "/api/times",
+      "destination": "/api/availability/times.js"
     },
     {
-      "src": "/api/(.*)",
-      "dest": "api/$1.js",
-      "methods": ["GET", "POST", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "*",
-        "Access-Control-Max-Age": "86400",
-        "Cache-Control": "no-cache"
-      }
+      "source": "/api/(.*)",
+      "destination": "/api/$1.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html",
+      "source": "/(.*)",
+      "destination": "/index.html",
       "status": 200
     }
   ],
   "headers": [
     {
-      "source": "/main.tsx",
+      "source": "/api/(.*)",
       "headers": [
         {
-          "key": "Content-Type",
-          "value": "text/javascript"
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
         }
       ]
     }
