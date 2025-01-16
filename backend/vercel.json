@@ -1,0 +1,81 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.js", // Adjust this path if your API files are in a different location
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json", // Or your frontend's entry point
+      "use": "@vercel/static-build", // Or appropriate builder for your frontend
+      "config": {
+        "distDir": "dist" // Or "build", or the directory where your built frontend files are
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/availability", // Your API route
+      "dest": "api/availability.js", // Path to your API handler
+      "methods": ["GET", "OPTIONS"], // HTTP methods your API accepts
+      "headers": {
+        "Access-Control-Allow-Origin": "https://law-calender.netlify.app",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Max-Age": "86400"
+      }
+    },
+    {
+      "src": "/api/test",
+      "dest": "api/test.js",
+      "methods": ["GET", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://law-calender.netlify.app",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Max-Age": "86400"
+      }
+    },
+    {
+      "src": "/api/dates",
+      "dest": "api/availability/dates.js",
+      "methods": ["GET", "POST", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://law-calender.netlify.app",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Max-Age": "86400",
+        "Cache-Control": "no-cache" // If needed
+      }
+    },
+    {
+      "src": "/api/times",
+      "dest": "api/availability/times.js",
+      "methods": ["GET", "POST", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://law-calender.netlify.app",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Max-Age": "86400",
+        "Cache-Control": "no-cache" // If needed
+      }
+    },
+    {
+      "src": "/api/(.*)", // Catch-all for other API routes
+      "dest": "api/$1.js",
+       "methods": ["GET", "POST", "OPTIONS"],
+      "headers": {
+        "Access-Control-Allow-Origin": "https://law-calender.netlify.app",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "*",
+        "Access-Control-Max-Age": "86400",
+        "Cache-Control": "no-cache" // If needed
+      }
+    },
+    {
+      "src": "/(.*)", // Client-side routing fallback
+      "dest": "/index.html",
+      "status": 200
+    }
+  ]
+}
