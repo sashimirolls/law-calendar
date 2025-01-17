@@ -52,13 +52,24 @@ export function useAvailability(selectedPeople: Salesperson[]) {
           return;
         }
 
-        // If you're looking for overlapping slots for all selected salespeople:
-        const mergedSlots = validSlots.filter(slot =>
-          selectedPeople.every(person =>
-            validSlots.some(ps => ps.datetime === slot.datetime)
-          )
-        );
+        let mergedSlots = [];
+        //overlapping slots for all selected salespeople:
+        if (selectedPeople.length === 2) {
+          const slotCountMap: { [key: string]: number } = {};
+        
+          // Count occurrences of each datetime
+          validSlots.forEach(slot => {
+            slotCountMap[slot.datetime] = (slotCountMap[slot.datetime] || 0) + 1;
+          });
+        
+          // Keep slots that occur exactly twice
+          mergedSlots = validSlots.filter(slot => slotCountMap[slot.datetime] === 2);
+        } else {
+          // Default behavior for other cases
+          mergedSlots = validSlots;
+        }
 
+        console.log('mergedSlots:', mergedSlots);
         Logger.debug('useAvailability', 'Merged slots:', mergedSlots);
 
         // Set the merged slots to the state

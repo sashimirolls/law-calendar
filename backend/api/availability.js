@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export default async (req, res) => {
-
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -17,9 +16,9 @@ export default async (req, res) => {
     query: req.query,
     headers: req.headers,
     env: {
-      hasApiKey: !!process.env.ACUITY_API_KEY,
-      hasUserId: !!process.env.ACUITY_USER_ID,
-      hasAppointmentType: !!process.env.APPOINTMENT_TYPE
+      hasApiKey: !process.env.ACUITY_API_KEY,
+      hasUserId: !process.env.ACUITY_USER_ID,
+      hasAppointmentType: !process.env.APPOINTMENT_TYPE
     }
   });
 
@@ -71,7 +70,6 @@ export default async (req, res) => {
       dataLength: response.data?.length || 0
     });
 
-    console.log("response>>>>>>>>>>>>>>>>.: ",process.env);
     return res.status(200).json(response.data);
   } catch (error) {
     console.error('[Vercel:Availability] Error:', {

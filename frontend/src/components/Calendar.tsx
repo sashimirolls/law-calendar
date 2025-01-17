@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { FaArrowLeft } from "react-icons/fa"; // Importing a back arrow icon
+import { FaArrowLeft } from "react-icons/fa";
 import { API_CONFIG } from '../services/config'
 import axios from "axios";
-import ErrorModal from "../components/ErrorModal";
+import MessageModal from "./MessageModal";
 import { useSearchParams } from 'react-router-dom';
-import { Salesperson } from '../types/acuity'; // Import the type for Salesperson
-import { salespeople } from '../config/salespeople'; // Import the salespeople array
+import { Salesperson } from '../types/acuity';
+import { salespeople } from '../config/salespeople';
 import { Calendar as LucideCalendar } from 'lucide-react';
 import RecurringAppointmentModal from './RecurringAppointmenModal';
+import eventBus from "../eventBus";
 
 interface TimeSlot {
   datetime: string;
@@ -18,7 +19,7 @@ interface CalendarProps {
 }
 
 
-export function Calendar({ availableSlots}: CalendarProps) {
+export function Calendar({ availableSlots }: CalendarProps) {
   const [activeTab, setActiveTab] = useState("chooseAppointment");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -29,10 +30,12 @@ export function Calendar({ availableSlots}: CalendarProps) {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [addedTimes, setAddedTimes] = useState<string[]>([]);
-  const [showRecurringModal, setShowRecurringModal] = useState(false);
- 
+  const [showRecurringModal, setShowRecurringModal] = useState(false); // Not in use
+
 
   const today = new Date();
+
+  // Not in use currently
   const handleRecurringClick = () => {
     setShowRecurringModal(true);
   };
@@ -58,44 +61,43 @@ export function Calendar({ availableSlots}: CalendarProps) {
   //     return acc;
   //   }, {});
   // };
+
+
   const groupSlotsByDate = (slots: TimeSlot[]) => {
-    console.log("Slots: ", slots);
-  
+
     return slots.reduce((acc: Record<string, TimeSlot[]>, slot) => {
       const date = new Date(slot.datetime);
       const localDate = `${date.getFullYear()}-${(date.getMonth() + 1)
         .toString()
         .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-  
+
       // Only consider available slots
       // if (slot.isAvailable){
-        if (!acc[localDate]) {
-          acc[localDate] = [];
-        }
-  
-        // Check for duplicate slots (same datetime on the same date)
-        const existingSlotIndex = acc[localDate].findIndex(
-          (existingSlot) => existingSlot.datetime === slot.datetime
+      if (!acc[localDate]) {
+        acc[localDate] = [];
+      }
+
+      // Check for duplicate slots (same datetime on the same date)
+      const existingSlotIndex = acc[localDate].findIndex(
+        (existingSlot) => existingSlot.datetime === slot.datetime
+      );
+
+      // If the slot is not already present, add it to the accumulator
+      if (existingSlotIndex === -1) {
+        acc[localDate].push(slot);
+      } else if (acc[localDate].length === 2) {
+        // If two identical slots exist, filter out the duplicate
+        acc[localDate] = acc[localDate].filter(
+          (existingSlot) => existingSlot.datetime !== slot.datetime
         );
-  
-        // If the slot is not already present, add it to the accumulator
-        if (existingSlotIndex === -1) {
-          acc[localDate].push(slot);
-        } else if (acc[localDate].length === 2) {
-          // If two identical slots exist, filter out the duplicate
-          acc[localDate] = acc[localDate].filter(
-            (existingSlot) => existingSlot.datetime !== slot.datetime
-          );
-        }
+      }
       // }
-  
+
       return acc;
     }, {});
   };
 
   const groupedSlots = groupSlotsByDate(availableSlots);
-  console.log("groupedSlots: ", groupedSlots);
-
   const handleDateClick = (date: Date) => {
     const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
     if (groupedSlots[formattedDate]) {
@@ -196,11 +198,17 @@ export function Calendar({ availableSlots}: CalendarProps) {
     setActiveTab("yourInfo");
   }
 
-  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [message, setModalMessage] = useState("");
+  const [isSuccessBooking,setSuccessBooking] = useState(false);
   const [confirmationURL, setConfirmationURL] = useState("");
 
   const [searchParams] = useSearchParams();
 
+
+  const handleCloseMessageModal = () => {
+    setShowMessageModal(false);
+  };
 
   // const handleFormSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();
@@ -263,19 +271,21 @@ export function Calendar({ availableSlots}: CalendarProps) {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Get the salesperson names from URL params (assuming multiple names can be passed)
+    if(!firstName || !lastName || !email || !phone) {
+      return ;
+    }
+
+    // Get the salesperson names from URL params
     const searchParams = new URLSearchParams(window.location.search);
-    const salespersonParam = searchParams.get('salespeople'); // e.g., "Archie Babcock, Brandon Miller"
-    console.log("search params,", salespersonParam);
+    const salespersonParam = searchParams.get('salespeople');
 
     if (!salespersonParam) {
       console.error("No salesperson found in the URL parameters");
       return;
     }
 
-    // Split the salesperson parameter into an array if multiple names are passed
+    // Split the salesperson parameter into an array in case multiple names are passed
     const salespersonNames = salespersonParam.split(',').map(name => name.trim());
-    console.log("Salesperson names to match:", salespersonNames);
 
     // Initialize an array to hold the matched calendarIDs
     const matchedCalendarIDs: string[] = [];
@@ -285,7 +295,6 @@ export function Calendar({ availableSlots}: CalendarProps) {
       const matchedSalesperson = salespeople.find(salesperson => salesperson.name === name);
       if (matchedSalesperson) {
         matchedCalendarIDs.push(matchedSalesperson.calendarID);
-        console.log(`Found match for ${name}. Calendar ID: ${matchedSalesperson.calendarID}`);
       } else {
         console.log(`No match found for ${name}`);
       }
@@ -301,12 +310,19 @@ export function Calendar({ availableSlots}: CalendarProps) {
 
     const sanitizedBaseUrl = API_CONFIG.BASE_URL.replace(/\/api$/, '');
 
-    console.log("Matched calendar ids: ", timesToSubmit);
+    // Generate a random 10-character ID
+    // const generateRandomId = () => Math.random().toString(36).substring(2, 12).toUpperCase();
+    // const appointmentId = generateRandomId();  // e.g., 'A1B2C3D4E5'
+
+    const generateAppointmentId = (length: number): number => Math.floor(Math.random() * Math.pow(10, length)); 
+    const appointmentId = generateAppointmentId(10);
+  
     const formDetails = timesToSubmit.map(time => ({
+      appointmentId: appointmentId,
       appointmentTypeID: "71960849",
       datetime: time,
       calendarID: matchedCalendarIDs,
-      clientInfo: { firstName, lastName, email, phone, notes }
+      clientInfo: { firstName, lastName, email, phone, notes },
     }));
 
     try {
@@ -322,8 +338,20 @@ export function Calendar({ availableSlots}: CalendarProps) {
       const allSuccess = responses.every(response => response.status === 200);
       if (allSuccess) {
         // Log the response
-        responses.forEach(response => {
+
+        setModalMessage("Form submitted successfully!");
+        setShowMessageModal(true);
+        setSuccessBooking(true);
+
+        responses.forEach(async response => {
           response.json().then(data => console.log('Response:', data));
+
+          // trigger event
+          eventBus.emit('formSubmitted', { id: appointmentId });
+
+          //confirm the form data is submitted
+
+
         });
 
         // Remove the selected times from the available slots
@@ -340,14 +368,18 @@ export function Calendar({ availableSlots}: CalendarProps) {
 
         // Redirect to the confirmation tab
         setActiveTab("confirmation");
+
       } else {
-        // Handle errors (if needed)
-        console.error("Some appointments failed to book.");
-        setShowErrorModal(true);
+        // Handle errors
+        setModalMessage("Failed to book an appointment. Please try again.");
+        setShowMessageModal(true);
+        setSuccessBooking(false);
       }
     } catch (error) {
-      console.error("Error booking appointment:", error);
-      setShowErrorModal(true);
+      setModalMessage("Failed to book an appointment.");
+      setShowMessageModal(true);
+      setShowMessageModal(true);
+      setSuccessBooking(false);
     }
   };
 
@@ -375,11 +407,9 @@ export function Calendar({ availableSlots}: CalendarProps) {
   );
 
 
-  // Error modal display
-  { showErrorModal && <ErrorModal onClose={() => setShowErrorModal(false)} /> }
 
   return (
-    <div className="p-8 bg-white rounded-lg shadow-md">
+    <div className="p-8 bg-white rounded-lg shadow-md mb-6 mt-6">
       <div className="flex items-center gap-2 mb-6">
         <LucideCalendar className="w-6 h-6 text-blue-600" />
         <h2 className="text-xl font-semibold">Schedule Appointment</h2>
@@ -465,12 +495,12 @@ export function Calendar({ availableSlots}: CalendarProps) {
                           >
                             Select and Add Another Time
                           </li>
-                          <li
+                          {/* <li
                             onClick={handleRecurringClick}
                             className="py-2 px-4 hover:bg-blue-200 cursor-pointer"
                           >
                             Select and Make Recurring
-                          </li>
+                          </li> */}
                         </ul>
                       </div>
                     )}
@@ -573,6 +603,14 @@ export function Calendar({ availableSlots}: CalendarProps) {
           </div>
         )}
 
+        <div>
+          {/* Your calendar component JSX here */}
+          {showMessageModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <MessageModal message={message} onClose={handleCloseMessageModal} isSuccess={isSuccessBooking} />
+            </div>
+          )}
+        </div>
 
         {/*Last option*/}
         {/* {showRecurringModal && (

@@ -2,7 +2,7 @@ import React from 'react';
 
 const FormSubmissionMessage: React.FC = () => {
   return (
-    <div className="flex items-center text-sm text-gray-600 bg-blue-50 p-4 border border-blue-200 rounded-md shadow-sm">
+    <div className="flex items-center text-sm text-gray-600 bg-blue-50 p-4 border border-blue-200 rounded-md shadow-sm mb-6">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-5 w-5 text-blue-500 mr-2"

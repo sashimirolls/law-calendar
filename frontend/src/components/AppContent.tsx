@@ -15,7 +15,6 @@ export function AppContent() {
   const { state, availability } = useApp();
   const { slots, loading, error } = availability;
 
-  console.log("App componetn: ", availability);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { salespeople } from '../config/salespeople';
 import { useApp } from '../contexts/AppContext';
+import axios from 'axios';
+import { API_CONFIG } from '../services/config';
+import eventBus from '../eventBus';
+import { Logger } from '../utils/logger';
 
 interface FormData {
   firstName: string;
@@ -105,7 +109,35 @@ const SalesVisitForm: React.FC = () => {
       selectedPeople: selectedSalespeople,
     };
     updateParams(updatedParams);
+
+    const handleEvent = (data :any) => handleSubmitForm(data);
+
+    eventBus.on('formSubmitted', handleEvent);
+
+    return () => {
+      eventBus.off('formSubmitted', handleEvent);  // Cleanup
+    };
   }, [selectedSalespeople, state, updateParams]);
+
+  
+
+  const handleSubmitForm = async (appointmentId: any) => {
+    const sanitizedBaseUrl = API_CONFIG.BASE_URL.replace(/\/api$/, '');
+    try {
+      const customerDetails = {
+        ...formData,
+        salespeople: selectedSalespeople,
+        appointmentId: appointmentId.id
+      };
+      const response = await axios.post(`${sanitizedBaseUrl}/customer/submitForm`, customerDetails);
+      if (response.status === 200) {
+        Logger.debug('SalesVisitForm', 'Customer form submitted successfully');
+      }
+    } catch (error) {
+      console.error('Error while submitting customer form:', error);
+    }
+  }
+
 
   return (
     <div style={{

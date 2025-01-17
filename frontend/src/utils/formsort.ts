@@ -18,7 +18,6 @@ export function parseFormsortData(searchParams: URLSearchParams) {
       const decoded = decodeURIComponent(rawSalespeople).replace('{{salesperson_selection}}', '');
       Logger.debug('Formsort', 'Decoded salespeople:', decoded);
       
-      console.log("Decoded ", decoded);
       // Only process if we have actual names
       if (decoded && !decoded.includes('{{')) {
         // Split by comma or 'and'

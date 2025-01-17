@@ -15,8 +15,6 @@ export default async function handler(req, res) {
   try {
     const auth = Buffer.from(`${process.env.ACUITY_USER_ID}:${process.env.ACUITY_API_KEY}`).toString('base64');
     
-    console.log('[Test] Making Acuity request with auth:', auth);
-
     const response = await axios({
       method: 'GET',
       url: 'https://acuityscheduling.com/api/v1/appointment-types',
