@@ -249,15 +249,7 @@ export function Calendar({ availableTimeSlots }: CalendarProps) {
 
     const sanitizedBaseUrl = API_CONFIG.BASE_URL.replace(/\/api$/, '');
 
-    // Generate a random 10-character ID
-    // const generateRandomId = () => Math.random().toString(36).substring(2, 12).toUpperCase();
-    // const appointmentId = generateRandomId();  // e.g., 'A1B2C3D4E5'
-
-    const generateAppointmentId = (length: number): number => Math.floor(Math.random() * Math.pow(10, length));
-    const appointmentId = generateAppointmentId(10);
-
     const formDetails = timesToSubmit.map(time => ({
-      appointmentId: appointmentId,
       appointmentTypeID: "71960849",
       datetime: time,
       calendarID: matchedCalendarIDs,
@@ -285,9 +277,6 @@ export function Calendar({ availableTimeSlots }: CalendarProps) {
         const responseData = await Promise.all(responses.map(response => response.json()));
         eventBus.emit('formSubmitted', responseData);
 
-       //Update timeslots
-        setAvailableSlots(availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime)));  
-
         // Clear the form
         setFirstName("");
         setLastName("");
@@ -299,6 +288,9 @@ export function Calendar({ availableTimeSlots }: CalendarProps) {
 
         // Redirect to the confirmation tab
         setActiveTab("confirmation");
+
+        //Update timeslots
+        setAvailableSlots(availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime)));  
 
       } else {
         // Handle errors
