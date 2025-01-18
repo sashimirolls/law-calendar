@@ -15,11 +15,12 @@ interface TimeSlot {
 }
 
 interface CalendarProps {
-  availableSlots: TimeSlot[];
+  availableTimeSlots: TimeSlot[];
 }
 
 
-export function Calendar({ availableSlots }: CalendarProps) {
+export function Calendar({ availableTimeSlots }: CalendarProps) {
+  const [availableSlots,setAvailableSlots] = useState<TimeSlot[]>(availableTimeSlots);
   const [activeTab, setActiveTab] = useState("chooseAppointment");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -282,12 +283,10 @@ export function Calendar({ availableSlots }: CalendarProps) {
         setSuccessBooking(true);
 
         const responseData = await Promise.all(responses.map(response => response.json()));
-        console.log("all success: ", responseData);
-
         eventBus.emit('formSubmitted', responseData);
 
-        // Remove the selected times from the available slots
-        // availableSlots = availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime));
+       //Update timeslots
+        setAvailableSlots(availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime)));  
 
         // Clear the form
         setFirstName("");
