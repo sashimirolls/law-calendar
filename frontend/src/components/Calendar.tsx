@@ -15,12 +15,11 @@ interface TimeSlot {
 }
 
 interface CalendarProps {
-  availableTimeSlots: TimeSlot[];
+  availableSlots: TimeSlot[];
 }
 
 
-export function Calendar({ availableTimeSlots }: CalendarProps) {
-  const [availableSlots,setAvailableSlots] = useState<TimeSlot[]>(availableTimeSlots);
+export function Calendar({ availableSlots }: CalendarProps) {
   const [activeTab, setActiveTab] = useState("chooseAppointment");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonthIndex, setCurrentMonthIndex] = useState(0);
@@ -249,7 +248,15 @@ export function Calendar({ availableTimeSlots }: CalendarProps) {
 
     const sanitizedBaseUrl = API_CONFIG.BASE_URL.replace(/\/api$/, '');
 
+    // Generate a random 10-character ID
+    // const generateRandomId = () => Math.random().toString(36).substring(2, 12).toUpperCase();
+    // const appointmentId = generateRandomId();  // e.g., 'A1B2C3D4E5'
+
+    const generateAppointmentId = (length: number): number => Math.floor(Math.random() * Math.pow(10, length));
+    const appointmentId = generateAppointmentId(10);
+
     const formDetails = timesToSubmit.map(time => ({
+      appointmentId: appointmentId,
       appointmentTypeID: "71960849",
       datetime: time,
       calendarID: matchedCalendarIDs,
@@ -275,7 +282,12 @@ export function Calendar({ availableTimeSlots }: CalendarProps) {
         setSuccessBooking(true);
 
         const responseData = await Promise.all(responses.map(response => response.json()));
+        console.log("all success: ", responseData);
+
         eventBus.emit('formSubmitted', responseData);
+
+        // Remove the selected times from the available slots
+        // availableSlots = availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime));
 
         // Clear the form
         setFirstName("");
@@ -288,9 +300,6 @@ export function Calendar({ availableTimeSlots }: CalendarProps) {
 
         // Redirect to the confirmation tab
         setActiveTab("confirmation");
-
-        //Update timeslots
-        setAvailableSlots(availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime)));  
 
       } else {
         // Handle errors
