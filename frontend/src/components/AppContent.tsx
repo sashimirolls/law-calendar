@@ -45,7 +45,7 @@ export function AppContent() {
       ) : state.selectedPeople.length === 0 || error ? (
         <ErrorDisplay error={"Calendar is not available for the selected salespeople"} />
       ) : (
-        <Calendar availableSlots={slots} />
+        <Calendar availableTimeSlots={slots} />
       )}
 
 
