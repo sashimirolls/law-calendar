@@ -200,79 +200,17 @@ export function Calendar({ availableSlots }: CalendarProps) {
 
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [message, setModalMessage] = useState("");
-  const [isSuccessBooking,setSuccessBooking] = useState(false);
-  const [confirmationURL, setConfirmationURL] = useState("");
-
-  const [searchParams] = useSearchParams();
-
+  const [isSuccessBooking, setSuccessBooking] = useState(false);
 
   const handleCloseMessageModal = () => {
     setShowMessageModal(false);
   };
 
-  // const handleFormSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   console.log("Form in queue to be submitted", );
-  //   if (!selectedDate || !selectedTime) {
-  //     console.log("Please select a date and time before confirming the appointment.");
-  //     return;
-  //   }
-
-  //   const salespeople = searchParams.get('salespeople');
-  //   console.log("Salespeople:", salespeople);
-
-  //   const formDetails = {
-  //     appointmentTypeID: "71960849",
-  //     datetime: selectedTime,
-  //     calendarID: "11211335",
-  //     clientInfo: {
-  //       firstName: firstName, // Replace with your actual state variable
-  //       lastName: lastName,   // Replace with your actual state variable
-  //       email: email,         // Replace with your actual state variable
-  //       phone: phone,         // Replace with your actual state variable
-  //       notes: notes,
-  //     }
-  //   };
-
-  //   try {
-  //     const response = await fetch(`http://localhost:3001/appointment/book-appointment`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(formDetails),
-  //     });
-  //     // const response = await axios.post(
-  //     //   `${API_CONFIG.BASE_URL}/appointment/book-appointment`,
-  //     //   formDetails,
-  //     //   {
-  //     //     headers: {
-  //     //       "Content-Type": "application/json",
-  //     //     },
-  //     //   }
-  //     // );
-
-  //     if (response.status === 200) {
-  //       console.log("success: ", response);
-  //       // setConfirmationURL("");
-  //       setFirstName("");
-  //       setLastName("");
-  //       setEmail("");
-  //       setPhone("");
-  //       setNotes("");
-  //       setActiveTab("confirmation");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error booking appointment:", error);
-  //     setShowErrorModal(true);
-  //   }
-  // };
-
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if(!firstName || !lastName || !email || !phone) {
-      return ;
+    if (!firstName || !lastName || !email || !phone) {
+      return;
     }
 
     // Get the salesperson names from URL params
@@ -314,9 +252,9 @@ export function Calendar({ availableSlots }: CalendarProps) {
     // const generateRandomId = () => Math.random().toString(36).substring(2, 12).toUpperCase();
     // const appointmentId = generateRandomId();  // e.g., 'A1B2C3D4E5'
 
-    const generateAppointmentId = (length: number): number => Math.floor(Math.random() * Math.pow(10, length)); 
+    const generateAppointmentId = (length: number): number => Math.floor(Math.random() * Math.pow(10, length));
     const appointmentId = generateAppointmentId(10);
-  
+
     const formDetails = timesToSubmit.map(time => ({
       appointmentId: appointmentId,
       appointmentTypeID: "71960849",
@@ -343,16 +281,10 @@ export function Calendar({ availableSlots }: CalendarProps) {
         setShowMessageModal(true);
         setSuccessBooking(true);
 
-        responses.forEach(async response => {
-          response.json().then(data => console.log('Response:', data));
+        const responseData = await Promise.all(responses.map(response => response.json()));
+        console.log("all success: ", responseData);
 
-          // trigger event
-          eventBus.emit('formSubmitted', { id: appointmentId });
-
-          //confirm the form data is submitted
-
-
-        });
+        eventBus.emit('formSubmitted', responseData);
 
         // Remove the selected times from the available slots
         // availableSlots = availableSlots.filter(slot => !timesToSubmit.includes(slot.datetime));

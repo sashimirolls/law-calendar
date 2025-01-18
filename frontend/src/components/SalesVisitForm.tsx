@@ -70,21 +70,6 @@ const SalesVisitForm: React.FC = () => {
 
 
   const { state, state: { updateParams } } = useApp();
-  // useEffect(() => {
-  //   // Update URL parameter when selectedSalespeople changes
-  //   const salespeopleParam = selectedSalespeople
-  //     .map(sp => `${sp.name.split(' ')[0]} ${sp.name.split(' ')[1]}`) // Include both first and last names
-  //     .join(',');
-  //   const url = new URL(window.location.href);
-  //   url.searchParams.set('salespeople', salespeopleParam);
-  //   window.history.pushState({}, '', url.toString());
-  //   const updatedParams = {
-  //     ...state,
-  //     selectedPeople: selectedSalespeople,
-  //   };
-  //   updateParams(updatedParams); // Update URL params and context
-  // }, [selectedSalespeople]);
-
   useEffect(() => {
     // Update URL parameter when selectedSalespeople changes
     const salespeopleParam = selectedSalespeople
@@ -110,7 +95,7 @@ const SalesVisitForm: React.FC = () => {
     };
     updateParams(updatedParams);
 
-    const handleEvent = (data :any) => handleSubmitForm(data);
+    const handleEvent = (data :[]) => handleSubmitForm(data);
 
     eventBus.on('formSubmitted', handleEvent);
 
@@ -120,16 +105,70 @@ const SalesVisitForm: React.FC = () => {
   }, [selectedSalespeople, state, updateParams]);
 
   
+const organizeData = (data: any) => {
+  console.log("Data to organize: ", data);
 
-  const handleSubmitForm = async (appointmentId: any) => {
+  // Extract all appointments from all BookingData records
+  const allAppointments = data.BookingData.flatMap((booking: any) => booking.appointments);
+  
+  // Extract dates for all appointments to determine start and end dates
+  const dates = allAppointments.map((appt: any) => new Date(appt.date));
+  const startDate = new Date(Math.min(...dates));
+  const endDate = new Date(Math.max(...dates));
+
+  // Structure the final data
+  const structuredData = {
+    firstName: data.firstName,
+    lastName: data.lastName,
+    title: data.title,
+    phone: data.phoneNumber,
+    email: data.email,
+    company: data.company,
+    communicatedDatas: data.communicatedDates,
+    reasonForRideAlons: data.reasonForRideAlong,
+    specificAccounts: data.specificAccounts,
+    salespeople: data.salespeople,
+    BookingData: {
+      firstName: allAppointments[0]?.firstName, // Assuming you want the first appointment's first name
+      lastName: allAppointments[0]?.lastName,   // Similarly for the last name
+      email: allAppointments[0]?.email,         // Similarly for the email
+      phone: allAppointments[0]?.phone,         // Similarly for the phone number
+      notes: allAppointments[0]?.notes,         // Similarly for the notes
+      dateCreated: allAppointments[0]?.dateCreated,
+      dateTimeCreated: allAppointments[0]?.datetimeCreated,
+      type: allAppointments[0]?.type,
+      appointmentTypeId: allAppointments[0]?.appointmentTypeID,
+      startDate: startDate,
+      endDate: endDate,
+      appointmentDetails: {
+        appointmentIds: [...new Set(allAppointments.map((appt: any) => appt.id))],
+        time: [...new Set(allAppointments.map((appt: any) => appt.time))],
+        endTime: [...new Set(allAppointments.map((appt: any) => appt.endTime))],
+        calendar: [...new Set(allAppointments.map((appt: any) => appt.calendar))],
+        calendarIds: [...new Set(allAppointments.map((appt: any) => appt.calendarID))],
+        dates: [...new Set(dates)]
+      }
+    }
+  };
+  
+  return structuredData;
+};
+
+
+
+  const handleSubmitForm = async (BookingData: []) => {
+    console.log("BookingData: ",BookingData);
     const sanitizedBaseUrl = API_CONFIG.BASE_URL.replace(/\/api$/, '');
     try {
       const customerDetails = {
         ...formData,
         salespeople: selectedSalespeople,
-        appointmentId: appointmentId.id
+        BookingData: BookingData
       };
-      const response = await axios.post(`${sanitizedBaseUrl}/customer/submitForm`, customerDetails);
+
+      const structedData =  organizeData(customerDetails);
+      console.log(structedData);
+      const response = await axios.post(`${sanitizedBaseUrl}/customer/submitForm`, structedData);
       if (response.status === 200) {
         Logger.debug('SalesVisitForm', 'Customer form submitted successfully');
       }

@@ -39,7 +39,6 @@ export function useAvailability(selectedPeople: Salesperson[]) {
 
         // Fetch all availability in parallel
         const results = await Promise.all(availabilityPromises);
-        console.log('results sds:', results);
 
         const allSlots = results.reduce((acc, current) => acc.concat(current), []); // Merge arrays in `results`
 
@@ -69,7 +68,6 @@ export function useAvailability(selectedPeople: Salesperson[]) {
           mergedSlots = validSlots;
         }
 
-        console.log('mergedSlots:', mergedSlots);
         Logger.debug('useAvailability', 'Merged slots:', mergedSlots);
 
         // Set the merged slots to the state

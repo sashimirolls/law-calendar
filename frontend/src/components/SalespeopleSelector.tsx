@@ -22,8 +22,7 @@ export function SalespeopleSelector({
   });
 
   useEffect(() => {
-    console.log('Selected people changed:', selectedPeople);
-    // Update calendar logic based on selectedPeople
+    Logger.debug('SalespeopleSelector', 'Selected people changed:', selectedPeople);
   }, [selectedPeople]);
 
   return (
